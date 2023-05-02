@@ -1,6 +1,6 @@
 import {RenderPosition, render} from './render.js';
-import FiltersView from './View/filters-view.js';
-import TripInfoView from './View/trip-info-view.js';
+import FiltersView from './view/filters-view.js';
+import TripInfoView from './view/trip-info-view.js';
 import EventsPresenter from './presenter/events-presenter.js';
 
 const tripMainElement = document.querySelector('.trip-main');
