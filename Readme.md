@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Дмитрий Трофимов](https://up.htmlacademy.ru/ecmascript/20/user/2336671).
-* Наставник: `Неизвестно`.
+* Наставник: [Нияз Гарипов](https://htmlacademy.ru/profile/niyaz).
 
 ---
 
