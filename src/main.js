@@ -4,10 +4,10 @@ import SortingView from './View/sorting-view.js';
 import TripInfoView from './View/trip-info-view.js';
 
 const tripMainElement = document.querySelector('.trip-main');
-const filtersControls = document.querySelector('.trip-controls__filters');
-const sortingControls = document.querySelector('.trip-events');
+const filtersElement = document.querySelector('.trip-controls__filters');
+const sortingElement = document.querySelector('.trip-events');
 
 render (new TripInfoView(),tripMainElement, RenderPosition.AFTERBEGIN);
-render (new FiltersView(), filtersControls);
-render (new SortingView(), sortingControls);
+render (new FiltersView(), filtersElement);
+render (new SortingView(), sortingElement);
 
