@@ -1,5 +1,3 @@
-//trip-events__list
-
 import {createElement} from '../render.js';
 
 function cretateTripEventsListTemplate () {
