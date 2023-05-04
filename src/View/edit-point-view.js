@@ -21,9 +21,6 @@ function createPictureElements (pictures) {
 function createOffersList (allOffers, checkedOffers) {
   const newOffers = [];
 
-  console.log(allOffers);
-  console.log(checkedOffers);
-
   allOffers.forEach((offer) => {
     if (checkedOffers.includes(offer)) {
       newOffers.push(`
