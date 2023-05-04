@@ -1,7 +1,7 @@
 import { getDestinationById } from '../mocks/destinations.js';
 import { getOfferById } from '../mocks/offers.js';
 import {createElement} from '../render.js';
-import { humanizePointDate, humanizePointTime, getdatesDifference } from '../utils.js';
+import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils.js';
 
 function createSelectedOffers (offers) {
   return (
@@ -22,7 +22,7 @@ function createTripEventsItemTemplate (point) {
   const timeFrom = humanizePointTime(dateFrom);
   const timeTo = humanizePointTime(dateTo);
   const destinationObject = getDestinationById(destination);
-  const datesDifference = getdatesDifference(dateFrom, dateTo);
+  const eventDuration = getEventDuration(dateFrom, dateTo);
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
 
   const offersList = [];
@@ -46,7 +46,7 @@ function createTripEventsItemTemplate (point) {
             &mdash;
             <time class="event__end-time" datetime="2019-03-18T11:00">${timeTo}</time>
           </p>
-          <p class="event__duration">${datesDifference}</p>
+          <p class="event__duration">${eventDuration}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
