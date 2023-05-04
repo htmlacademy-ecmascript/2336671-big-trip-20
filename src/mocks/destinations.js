@@ -10,11 +10,26 @@ const getPicture = () => ({
 
 const randomDestinationID = createIdGenerator();
 
-const getDestination = () => ({
+const createDestination = (city) => ({
   id: randomDestinationID(),
   description: getRandomArrayElement(DESCRIPTIONS),
-  name: getRandomArrayElement(CITIES),
+  name: city,
   pictures: Array.from({length: getRandomInteger(0, MAX_PICTURES)}, getPicture)
 });
 
-export { getDestination };
+const getDestinations = () => {
+  const destinations = [];
+  for (let i = 0; i < CITIES.length; i++) {
+    destinations[i] = createDestination(CITIES[i]);
+  }
+  return destinations;
+};
+
+const allDestinations = getDestinations();
+
+const getDestinationById = (id) => {
+  const destination = allDestinations.find((element) => element.id === id);
+  return destination;
+};
+
+export { getDestinationById };
