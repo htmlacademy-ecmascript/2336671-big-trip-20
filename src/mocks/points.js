@@ -16,7 +16,7 @@ const getPoint = () => {
     dateTo: new Date(new Date().getTime() + (dateStep() * 550 * 60 * 60 * 24)),
     destination: getRandomInteger(1, CITIES.length),
     isFavorite: Math.random() < 0.5,
-    offers: offerIds.slice(0, offerIds.length - 1),
+    offers: offerIds.slice(0, offerIds.length - getRandomInteger(0, offerIds.length)),
     type: pointType
   };
   return point;
