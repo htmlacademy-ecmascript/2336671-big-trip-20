@@ -4,17 +4,6 @@ import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
 import dayjs from 'dayjs';
 import { CITIES } from '../const.js';
 
-//to-do add photo
-{/* <div class="event__photos-container">
-  <div class="event__photos-tape">
-    <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-    <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-    <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-    <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-    <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
-  </div>
-</div> */}
-
 function createCityElements (cities) {
   return (
     cities.map((city) => (`<option value="${city}"></option>`)).join(' ')
@@ -30,19 +19,36 @@ function createPictureElements (pictures) {
 }
 
 function createOffersList (allOffers, checkedOffers) {
+  const newOffers = [];
 
-  return (
-    allOffers.map((offer) => (`
-    <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}">
-      <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
-        <span class="event__offer-title">${offer.title}</span>
-        +€&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`)).join(' ')
-  );
+  console.log(allOffers);
+  console.log(checkedOffers);
 
+  allOffers.forEach((offer) => {
+    if (checkedOffers.includes(offer)) {
+      newOffers.push(`
+      <div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" checked>
+        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
+          <span class="event__offer-title">${offer.title}</span>
+          +€&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`);
+    } else {
+      newOffers.push(`
+      <div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}">
+        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
+          <span class="event__offer-title">${offer.title}</span>
+          +€&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`);
+    }
+  });
+
+  return newOffers.join('');
 }
 
 function createEditPointTemplate (point) {

@@ -11,10 +11,15 @@ const createOfferDescription = () => ({
   price: getRandomInteger(10, 500)
 });
 
-const createOffersbyType = (type) => ({
-  type: type,
-  offers: Array.from ({length: getRandomInteger(1, MAX_OFFERS)}, createOfferDescription)
-});
+const createOffersbyType = (type) => {
+
+  const offerByType = {
+    type: type,
+    offers: Array.from({length: getRandomInteger(1, MAX_OFFERS)}, createOfferDescription)
+  };
+
+  return offerByType;
+};
 
 const getOffers = () => {
   const offers = [];
