@@ -20,7 +20,7 @@ export default class EventsPresenter {
     render (new EditPointView(), this.eventsListComponent.getElement());
 
     for (let i = 0; i < this.eventPoints.length; i++) {
-      render (new TripEventsItemView({task: this.eventPoints[i]}), this.eventsListComponent.getElement());
+      render (new TripEventsItemView({point: this.eventPoints[i]}), this.eventsListComponent.getElement());
     }
   }
 }
