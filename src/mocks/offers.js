@@ -48,5 +48,16 @@ const getOfferById = (id) => {
   return offerItem;
 };
 
+const getAllOffersByType = (type) => {
+  let offersByType = [];
+  allOffers.forEach((offer) => {
+    if (offer.type === type) {
 
-export { getOffersIds, getOfferById };
+      offersByType = offer.offers;
+    }
+  });
+  return offersByType;
+};
+
+
+export { getOffersIds, getOfferById, getAllOffersByType };

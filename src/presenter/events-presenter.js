@@ -17,9 +17,9 @@ export default class EventsPresenter {
 
     render (new SortingView(), this.eventContainer);
     render (this.eventsListComponent, this.eventContainer);
-    render (new EditPointView(), this.eventsListComponent.getElement());
+    render (new EditPointView({point: this.eventPoints[0]}), this.eventsListComponent.getElement());
 
-    for (let i = 0; i < this.eventPoints.length; i++) {
+    for (let i = 1; i < this.eventPoints.length; i++) {
       render (new TripEventsItemView({point: this.eventPoints[i]}), this.eventsListComponent.getElement());
     }
   }

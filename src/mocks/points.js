@@ -5,8 +5,6 @@ import { getOffersIds } from './offers.js';
 const randomPointID = createIdGenerator();
 const dateStep = createIdGenerator();
 
-//to-do list points
-
 const getPoint = () => {
   const pointType = getRandomArrayElement(EVENTS);
   const offerIds = getOffersIds(pointType);
