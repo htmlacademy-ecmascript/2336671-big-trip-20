@@ -22,27 +22,16 @@ function createOffersList (allOffers, checkedOffers) {
   const newOffers = [];
 
   allOffers.forEach((offer) => {
-    if (checkedOffers.includes(offer)) {
-      newOffers.push(`
+    const isChecked = checkedOffers.includes(offer) ? 'checked' : '';
+    newOffers.push(`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" checked>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" ${isChecked}>
         <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
           <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </label>
       </div>`);
-    } else {
-      newOffers.push(`
-      <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}">
-        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
-          <span class="event__offer-title">${offer.title}</span>
-          +€&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`);
-    }
   });
 
   return newOffers.join('');
@@ -51,7 +40,7 @@ function createOffersList (allOffers, checkedOffers) {
 function createEditPointTemplate (point) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
 
-  const destinationObject = getDestinationById(destination);
+  const destinations = getDestinationById(destination);
 
   const allOffers = getAllOffersByType(type);
 
@@ -126,7 +115,7 @@ function createEditPointTemplate (point) {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationObject.name}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1">
         <datalist id="destination-list-1">
           ${createCityElements(CITIES)}
         </datalist>
@@ -165,10 +154,10 @@ function createEditPointTemplate (point) {
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destinationObject.description}</p>
+        <p class="event__destination-description">${destinations.description}</p>
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${createPictureElements(destinationObject.pictures)}
+            ${createPictureElements(destinations.pictures)}
           </div>
         </div>
       </section>
