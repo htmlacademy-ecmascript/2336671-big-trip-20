@@ -1,5 +1,5 @@
 import { OFFERS, EVENTS } from '../const.js';
-import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 
 const MAX_OFFERS = 5;
 

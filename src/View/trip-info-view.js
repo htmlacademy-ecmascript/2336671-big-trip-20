@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mocks/destinations.js';
-import { humanizePointDate } from '../utils.js';
+import { humanizePointDate } from '../utils/point.js';
 
 const humanizeTripDates = (startDate, endDate) => {
   const start = startDate.split(' ').reverse();

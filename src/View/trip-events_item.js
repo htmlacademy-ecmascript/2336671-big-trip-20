@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mocks/destinations.js';
 import { getOfferById } from '../mocks/offers.js';
-import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils.js';
+import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils/point.js';
 
 function createSelectedOffers (offers) {
   return (
