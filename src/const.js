@@ -60,3 +60,9 @@ export const OFFERS = [
   'Lunch in city'
 ];
 
+export const FilterType = {
+  EVERYTHING: 'Everything',
+  FUTURE: 'Future',
+  PRESET: 'Present',
+  PAST: 'Past',
+};

@@ -1,6 +1,12 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
 dayjs.extend(duration);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+
 
 const DATE_FORMAT = 'D MMM';
 const TIME_FORMAT = 'HH:mm';
@@ -26,4 +32,19 @@ const getEventDuration = (dateFrom, dateTo) => {
   return eventDuration;
 };
 
-export { humanizePointDate, humanizePointTime, getEventDuration };
+function isPointFuture(dateFrom) {
+  return dateFrom && dayjs().isBefore(dateFrom, 'D');
+}
+
+function isPointPast(dateTo) {
+  return dateTo && dayjs().isAfter(dateTo, 'D');
+}
+
+function isPointPreset(dateFrom, dateTo) {
+  const isDateFromSameDateOrBefore = dayjs().isSameOrAfter(dayjs(dateFrom), 'D');
+  const isDateToSameDateOrAfter = dayjs().isSameOrBefore(dayjs(dateTo), 'day');
+
+  return isDateFromSameDateOrBefore && isDateToSameDateOrAfter;
+}
+
+export { humanizePointDate, humanizePointTime, getEventDuration, isPointFuture, isPointPast, isPointPreset };
