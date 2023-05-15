@@ -1,7 +1,7 @@
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mocks/destinations.js';
 import { getOfferById } from '../mocks/offers.js';
-import {createElement} from '../render.js';
-import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils.js';
+import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils/point.js';
 
 function createSelectedOffers (offers) {
   return (
@@ -69,24 +69,37 @@ function createTripEventsItemTemplate (point) {
   );
 }
 
-export default class TripEventsItemView {
-  constructor ({point}) {
-    this.point = point;
+export default class TripEventsItemView extends AbstractView {
+
+  #point = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
+
+  constructor ({point, onEditClick, onFavoriteClick}) {
+    super();
+    this.#point = point;
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editEventHandler);
+
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#onFavoriteButtonClick);
   }
 
-  getTemplate () {
-    return createTripEventsItemTemplate(this.point);
+  get template() {
+    return createTripEventsItemTemplate(this.#point);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #editEventHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.element;
-  }
+  #onFavoriteButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 
-  removeElement () {
-    this.element = null;
-  }
 }

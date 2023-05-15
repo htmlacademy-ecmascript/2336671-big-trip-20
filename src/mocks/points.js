@@ -1,5 +1,5 @@
 import { CITIES, EVENTS } from '../const.js';
-import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { getOffersIds } from './offers.js';
 
 const randomPointID = createIdGenerator();

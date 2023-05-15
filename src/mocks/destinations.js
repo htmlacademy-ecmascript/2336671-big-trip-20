@@ -1,4 +1,4 @@
-import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { CITIES, DESCRIPTIONS } from '../const.js';
 
 const MAX_PICTURES = 5;

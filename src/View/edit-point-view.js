@@ -1,8 +1,8 @@
 import { getDestinationById } from '../mocks/destinations.js';
-import { createElement } from '../render.js';
 import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
 import dayjs from 'dayjs';
 import { CITIES } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createCityElements (cities) {
   return (
@@ -166,24 +166,44 @@ function createEditPointTemplate (point) {
 </li>`);
 }
 
-export default class EditPointView {
-  constructor ({point}) {
-    this.point = point;
+export default class EditPointView extends AbstractView {
+
+  #point = null;
+  #handleFormSubmit = null;
+  #handleFormCancel = null;
+  #handleFormDelete = null;
+
+  constructor ({point, onFormSubmit, onFormCancel, onFormDelete}) {
+    super();
+    this.#point = point;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormCancel = onFormCancel;
+    this.#handleFormDelete = onFormDelete;
+
+    const form = this.element.querySelector('form');
+
+    form.addEventListener('submit', this.#formSubmitHandler);
+    form.addEventListener('reset', this.#formResetHandler);
+
+    form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
   }
 
-  getTemplate () {
-    return createEditPointTemplate(this.point);
+  get template () {
+    return createEditPointTemplate(this.#point);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
+  #formResetHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormDelete();
+  };
 
-  removeElement () {
-    this.element = null;
-  }
+  #onCancelButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#handleFormCancel();
+  };
 }
