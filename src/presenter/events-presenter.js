@@ -2,7 +2,7 @@ import TripEventsListView from '../View/trip-events_list.js';
 import TripEventsItemView from '../View/trip-events_item.js';
 import EditPointView from '../View/edit-point-view.js';
 import SortingView from '../View/sorting-view.js';
-import { render, replace } from '../framework/render.js';
+import { remove, render, replace } from '../framework/render.js';
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
@@ -56,6 +56,10 @@ export default class EventsPresenter {
       },
       onFormCancel: () => {
         replaceEditToItem();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onFormDelete: () => {
+        remove(editItemComponent);
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     });

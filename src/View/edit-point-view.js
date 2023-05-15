@@ -171,12 +171,14 @@ export default class EditPointView extends AbstractView {
   #point = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
+  #handleFormDelete = null;
 
-  constructor ({point, onFormSubmit, onFormCancel}) {
+  constructor ({point, onFormSubmit, onFormCancel, onFormDelete}) {
     super();
     this.#point = point;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormCancel = onFormCancel;
+    this.#handleFormDelete = onFormDelete;
 
     const form = this.element.querySelector('form');
 
@@ -197,6 +199,7 @@ export default class EditPointView extends AbstractView {
 
   #formResetHandler = (evt) => {
     evt.preventDefault();
+    this.#handleFormDelete();
   };
 
   #onCancelButtonClick = (evt) => {
