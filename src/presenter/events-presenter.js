@@ -3,6 +3,7 @@ import TripEventsItemView from '../View/trip-events_item.js';
 import EditPointView from '../View/edit-point-view.js';
 import SortingView from '../View/sorting-view.js';
 import { remove, render, replace } from '../framework/render.js';
+import TripEventsListEmptyView from '../View/trip-events_list-empty.js';
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
@@ -71,6 +72,11 @@ export default class EventsPresenter {
   }
 
   #renderEventsList() {
+
+    if (!this.#eventPoints.length) {
+      render(new TripEventsListEmptyView(), this.#eventContainer);
+      return;
+    }
 
     render (new SortingView(), this.#eventContainer);
     render (this.#eventsListComponent, this.#eventContainer);
