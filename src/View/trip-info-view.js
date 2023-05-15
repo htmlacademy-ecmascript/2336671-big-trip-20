@@ -1,5 +1,5 @@
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mocks/destinations.js';
-import { createElement } from '../render.js';
 import { humanizePointDate } from '../utils.js';
 
 const humanizeTripDates = (startDate, endDate) => {
@@ -40,24 +40,16 @@ function createTripInfoTemplate (points) {
 </section>`);
 }
 
-export default class TripInfoView {
+export default class TripInfoView extends AbstractView {
+
+  #points = null;
+
   constructor ({points}) {
-    this.points = points;
+    super();
+    this.#points = points;
   }
 
-  getTemplate () {
-    return createTripInfoTemplate(this.points);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement () {
-    this.element = null;
+  get template () {
+    return createTripInfoTemplate(this.#points);
   }
 }

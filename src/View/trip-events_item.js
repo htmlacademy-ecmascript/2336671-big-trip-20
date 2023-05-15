@@ -1,6 +1,6 @@
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mocks/destinations.js';
 import { getOfferById } from '../mocks/offers.js';
-import {createElement} from '../render.js';
 import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils.js';
 
 function createSelectedOffers (offers) {
@@ -69,24 +69,17 @@ function createTripEventsItemTemplate (point) {
   );
 }
 
-export default class TripEventsItemView {
+export default class TripEventsItemView extends AbstractView {
+
+  #point = null;
+
   constructor ({point}) {
-    this.point = point;
+    super();
+    this.#point = point;
   }
 
-  getTemplate () {
-    return createTripEventsItemTemplate(this.point);
+  get template() {
+    return createTripEventsItemTemplate(this.#point);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement () {
-    this.element = null;
-  }
 }

@@ -1,5 +1,4 @@
-import { RenderPosition } from '../render.js';
-import { render } from '../render.js';
+import { render, RenderPosition } from '../framework/render.js';
 import TripInfoView from '../View/trip-info-view.js';
 
 export default class TripInfoPresenter {

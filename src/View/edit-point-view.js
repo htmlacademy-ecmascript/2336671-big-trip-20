@@ -1,8 +1,8 @@
 import { getDestinationById } from '../mocks/destinations.js';
-import { createElement } from '../render.js';
 import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
 import dayjs from 'dayjs';
 import { CITIES } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createCityElements (cities) {
   return (
@@ -166,24 +166,14 @@ function createEditPointTemplate (point) {
 </li>`);
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
+
   constructor ({point}) {
+    super();
     this.point = point;
   }
 
-  getTemplate () {
+  get template () {
     return createEditPointTemplate(this.point);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement () {
-    this.element = null;
   }
 }
