@@ -6,14 +6,16 @@ export default class TripInfoPresenter {
   #eventContainer = null;
   #pointsModel = null;
 
+  #eventPoints = [];
+
   constructor({eventContainer, pointsModel}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
   }
 
   init () {
-    this.eventPoints = [...this.#pointsModel.points];
+    this.#eventPoints = [...this.#pointsModel.points];
 
-    render(new TripInfoView({points: this.eventPoints}), this.#eventContainer, RenderPosition.AFTERBEGIN);
+    render(new TripInfoView({points: this.#eventPoints}), this.#eventContainer, RenderPosition.AFTERBEGIN);
   }
 }

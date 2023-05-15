@@ -10,20 +10,22 @@ export default class EventsPresenter {
   #eventContainer = null;
   #pointsModel = null;
 
+  #eventPoints = [];
+
   constructor({eventContainer, pointsModel}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
   }
 
   init () {
-    this.eventPoints = [...this.#pointsModel.points];
+    this.#eventPoints = [...this.#pointsModel.points];
 
     render (new SortingView(), this.#eventContainer);
     render (this.#eventsListComponent, this.#eventContainer);
-    render (new EditPointView({point: this.eventPoints[0]}), this.#eventsListComponent.element);
+    render (new EditPointView({point: this.#eventPoints[0]}), this.#eventsListComponent.element);
 
-    for (let i = 1; i < this.eventPoints.length; i++) {
-      render (new TripEventsItemView({point: this.eventPoints[i]}), this.#eventsListComponent.element);
+    for (let i = 1; i < this.#eventPoints.length; i++) {
+      render (new TripEventsItemView({point: this.#eventPoints[i]}), this.#eventsListComponent.element);
     }
   }
 }
