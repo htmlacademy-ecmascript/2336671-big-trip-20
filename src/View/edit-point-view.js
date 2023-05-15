@@ -168,12 +168,14 @@ function createEditPointTemplate (point) {
 
 export default class EditPointView extends AbstractView {
 
+  #point = null;
+
   constructor ({point}) {
     super();
-    this.point = point;
+    this.#point = point;
   }
 
   get template () {
-    return createEditPointTemplate(this.point);
+    return createEditPointTemplate(this.#point);
   }
 }
