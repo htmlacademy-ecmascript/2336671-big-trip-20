@@ -23,7 +23,7 @@ export default class EventsPresenter {
     render (new SortingView(), this.#eventContainer);
     render (this.#eventsListComponent, this.#eventContainer);
 
-    for (let i = 1; i < this.#eventPoints.length; i++) {
+    for (let i = 0; i < this.#eventPoints.length; i++) {
       this.#renderPoint(this.#eventPoints[i]);
     }
   }
