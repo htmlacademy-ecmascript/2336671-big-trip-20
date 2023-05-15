@@ -5,22 +5,25 @@ import SortingView from '../View/sorting-view.js';
 import { render } from '../framework/render.js';
 
 export default class EventsPresenter {
-  eventsListComponent = new TripEventsListView();
+  #eventsListComponent = new TripEventsListView();
+
+  #eventContainer = null;
+  #pointsModel = null;
 
   constructor({eventContainer, pointsModel}) {
-    this.eventContainer = eventContainer;
-    this.pointsModel = pointsModel;
+    this.#eventContainer = eventContainer;
+    this.#pointsModel = pointsModel;
   }
 
   init () {
-    this.eventPoints = [...this.pointsModel.getPoints()];
+    this.eventPoints = [...this.#pointsModel.points];
 
-    render (new SortingView(), this.eventContainer);
-    render (this.eventsListComponent, this.eventContainer);
-    render (new EditPointView({point: this.eventPoints[0]}), this.eventsListComponent.element);
+    render (new SortingView(), this.#eventContainer);
+    render (this.#eventsListComponent, this.#eventContainer);
+    render (new EditPointView({point: this.eventPoints[0]}), this.#eventsListComponent.element);
 
     for (let i = 1; i < this.eventPoints.length; i++) {
-      render (new TripEventsItemView({point: this.eventPoints[i]}), this.eventsListComponent.element);
+      render (new TripEventsItemView({point: this.eventPoints[i]}), this.#eventsListComponent.element);
     }
   }
 }
