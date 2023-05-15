@@ -2,7 +2,7 @@ import TripEventsListView from '../View/trip-events_list.js';
 import TripEventsItemView from '../View/trip-events_item.js';
 import EditPointView from '../View/edit-point-view.js';
 import SortingView from '../View/sorting-view.js';
-import { render } from '../framework/render.js';
+import { render, replace } from '../framework/render.js';
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
@@ -22,10 +22,53 @@ export default class EventsPresenter {
 
     render (new SortingView(), this.#eventContainer);
     render (this.#eventsListComponent, this.#eventContainer);
-    render (new EditPointView({point: this.#eventPoints[0]}), this.#eventsListComponent.element);
 
     for (let i = 1; i < this.#eventPoints.length; i++) {
-      render (new TripEventsItemView({point: this.#eventPoints[i]}), this.#eventsListComponent.element);
+      this.#renderPoint(this.#eventPoints[i]);
     }
   }
+
+  #renderPoint(point) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditToItem();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const itemComponent = new TripEventsItemView({
+      point,
+      onEditClick: () => {
+        replaceItemToEdit();
+        document.addEventListener('keydown', escKeyDownHandler);
+      },
+      onFavoriteClick: () => {
+        //to-do
+      }
+    });
+
+    const editItemComponent = new EditPointView({
+      point,
+      onFormSubmit: () => {
+        replaceEditToItem();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onFormCancel: () => {
+        replaceEditToItem();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replaceItemToEdit() {
+      replace(editItemComponent, itemComponent);
+    }
+
+    function replaceEditToItem() {
+      replace(itemComponent, editItemComponent);
+    }
+
+    render(itemComponent, this.#eventsListComponent.element);
+  }
+
 }

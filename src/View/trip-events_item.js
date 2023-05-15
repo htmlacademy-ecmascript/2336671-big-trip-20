@@ -72,14 +72,34 @@ function createTripEventsItemTemplate (point) {
 export default class TripEventsItemView extends AbstractView {
 
   #point = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor ({point}) {
+  constructor ({point, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editEventHandler);
+
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#onFavoriteButtonClick);
   }
 
   get template() {
     return createTripEventsItemTemplate(this.#point);
   }
+
+  #editEventHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
+
+  #onFavoriteButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 
 }
