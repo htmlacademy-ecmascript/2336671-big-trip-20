@@ -1,5 +1,5 @@
 import { render, RenderPosition } from '../framework/render.js';
-import TripInfoView from '../View/trip-info-view.js';
+import TripInfoView from '../view/trip-info-view.js';
 
 export default class TripInfoPresenter {
 
@@ -15,6 +15,10 @@ export default class TripInfoPresenter {
 
   init () {
     this.#eventPoints = [...this.#pointsModel.points];
+
+    if (!this.#eventPoints.length) {
+      return;
+    }
 
     render(new TripInfoView({points: this.#eventPoints}), this.#eventContainer, RenderPosition.AFTERBEGIN);
   }

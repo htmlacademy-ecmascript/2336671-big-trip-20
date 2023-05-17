@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-
+//
 function createNewPointTemplate () {
   return (`<form class="event event--edit" action="#" method="post">
   <header class="event__header">
