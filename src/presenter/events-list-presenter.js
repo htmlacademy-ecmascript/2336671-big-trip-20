@@ -36,7 +36,7 @@ export default class EventsPresenter {
   }
 
   #renderEvent(point) {
-    const eventPresenter = new EventPresenter({eventsListContainer: this.#eventsListComponent.element,});
+    const eventPresenter = new EventPresenter({eventsListContainer: this.#eventsListComponent.element});
     eventPresenter.init(point);
   }
 
