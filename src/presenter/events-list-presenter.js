@@ -41,10 +41,15 @@ export default class EventsPresenter {
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
 
+  #handleModeChange = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   #renderEvent(point) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventsListComponent.element,
-      onDataChange: this.#handleEventChange
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange
     });
     eventPresenter.init(point);
 
