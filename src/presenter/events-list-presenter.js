@@ -5,7 +5,6 @@ import { render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
 import { updateItem } from '../utils/common.js';
 import { SortType } from '../const.js';
-import dayjs from 'dayjs';
 import { getDuration } from '../utils/point.js';
 
 export default class EventsPresenter {
