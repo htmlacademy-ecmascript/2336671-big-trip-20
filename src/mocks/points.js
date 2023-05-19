@@ -2,7 +2,7 @@ import { EVENTS } from '../const.js';
 import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { getDestinationsIds } from './destinations.js';
 import { getOffersIds } from './offers.js';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 
 const dateStep = createIdGenerator();
 
