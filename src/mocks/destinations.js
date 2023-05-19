@@ -1,5 +1,6 @@
-import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils/common.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { CITIES, DESCRIPTIONS } from '../const.js';
+import {nanoid} from 'nanoid';
 
 const MAX_PICTURES = 5;
 
@@ -8,10 +9,8 @@ const getPicture = () => ({
   description: getRandomArrayElement(DESCRIPTIONS)
 });
 
-const randomDestinationID = createIdGenerator();
-
 const createDestination = (city) => ({
-  id: randomDestinationID(),
+  id: nanoid(),
   description: getRandomArrayElement(DESCRIPTIONS),
   name: city,
   pictures: Array.from({length: getRandomInteger(0, MAX_PICTURES)}, getPicture)
@@ -27,9 +26,11 @@ const getDestinations = () => {
 
 const allDestinations = getDestinations();
 
+const getDestinationsIds = () => allDestinations.map((destination) => destination.id);
+
 const getDestinationById = (id) => {
   const destination = allDestinations.find((element) => element.id === id);
   return destination;
 };
 
-export { getDestinationById };
+export { getDestinationsIds, getDestinationById };

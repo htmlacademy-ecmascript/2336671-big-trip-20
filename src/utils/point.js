@@ -14,8 +14,10 @@ const TIME_FORMAT = 'HH:mm';
 const humanizePointDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
 const humanizePointTime = (time) => time ? dayjs(time).format(TIME_FORMAT) : '';
 
+const getDuration = (dateFrom, dateTo) => dayjs.duration(dayjs(dateTo) - dayjs(dateFrom));
+
 const getEventDuration = (dateFrom, dateTo) => {
-  const diff = dayjs.duration(dayjs(dateTo) - dayjs(dateFrom));
+  const diff = getDuration(dateFrom, dateTo);
 
   let eventDuration = '';
 
@@ -47,4 +49,4 @@ function isPointPreset(dateFrom, dateTo) {
   return isDateFromSameDateOrBefore && isDateToSameDateOrAfter;
 }
 
-export { humanizePointDate, humanizePointTime, getEventDuration, isPointFuture, isPointPast, isPointPreset };
+export { humanizePointDate, humanizePointTime, getDuration, getEventDuration, isPointFuture, isPointPast, isPointPreset };

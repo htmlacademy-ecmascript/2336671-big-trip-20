@@ -2,6 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mocks/destinations.js';
 import { getOfferById } from '../mocks/offers.js';
 import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils/point.js';
+import dayjs from 'dayjs';
 
 function createSelectedOffers (offers) {
   return (
@@ -31,20 +32,19 @@ function createTripEventsItemTemplate (point) {
     offersList.push(getOfferById(id));
   });
 
-
   return (
     `<li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-18">${date}</time>
+        <time class="event__date" datetime="${dayjs(date).format('YYYY-MM-DD')}">${date}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
         <h3 class="event__title">${type} ${destinationObject.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">${timeFrom}</time>
+            <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${timeFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">${timeTo}</time>
+            <time class="event__end-time" datetime="${dayjs(dateTo).format('YYYY-MM-DDTHH:mm')}">${timeTo}</time>
           </p>
           <p class="event__duration">${eventDuration}</p>
         </div>
