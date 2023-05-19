@@ -3,6 +3,7 @@ import SortingView from '../view/sorting-view.js';
 import TripEventsListEmptyView from '../view/trip-events_list-empty.js';
 import { render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
+import { updateItem } from '../utils/common.js';
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
@@ -13,6 +14,7 @@ export default class EventsPresenter {
   #pointsModel = null;
 
   #eventPoints = [];
+  #eventPresenters = new Map();
 
   constructor({eventContainer, pointsModel}) {
     this.#eventContainer = eventContainer;
@@ -21,7 +23,6 @@ export default class EventsPresenter {
 
   init () {
     this.#eventPoints = [...this.#pointsModel.points];
-
     this.#renderEventsList();
   }
 
@@ -35,9 +36,19 @@ export default class EventsPresenter {
     this.#renderEvents();
   }
 
+  #handleEventChange = (updatedEvent) => {
+    this.#eventPoints = updateItem(this.#eventPoints, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
   #renderEvent(point) {
-    const eventPresenter = new EventPresenter({eventsListContainer: this.#eventsListComponent.element});
+    const eventPresenter = new EventPresenter({
+      eventsListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleEventChange
+    });
     eventPresenter.init(point);
+
+    this.#eventPresenters.set(point.id, eventPresenter);
   }
 
   #renderEvents() {
@@ -55,4 +66,5 @@ export default class EventsPresenter {
   #renderSort() {
     render (this.#sortComponent, this.#eventContainer);
   }
+
 }

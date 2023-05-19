@@ -4,14 +4,16 @@ import { remove, render, replace } from '../framework/render';
 
 export default class EventPresenter {
   #eventsListContainer = null;
+  #handleDataChange = null;
 
   #point = null;
 
   #eventComponent = null;
   #eventEditComponent = null;
 
-  constructor ({eventsListContainer}) {
+  constructor ({eventsListContainer, onDataChange}) {
     this.#eventsListContainer = eventsListContainer;
+    this.#handleDataChange = onDataChange;
   }
 
   init (point) {
@@ -25,9 +27,7 @@ export default class EventPresenter {
       onEditClick: () => {
         this.#replaceItemToEdit();
       },
-      onFavoriteClick: () => {
-        //to-do
-      }
+      onFavoriteClick: this.#handleFavoriteClick
     });
 
     this.#eventEditComponent = new EditPointView({
@@ -81,4 +81,8 @@ export default class EventPresenter {
     replace(this.#eventComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
+
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite });
+  };
 }

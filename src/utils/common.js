@@ -16,4 +16,8 @@ const createIdGenerator = () => {
   };
 };
 
-export { getRandomArrayElement, getRandomInteger, createIdGenerator };
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export { getRandomArrayElement, getRandomInteger, createIdGenerator, updateItem };
