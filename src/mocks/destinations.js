@@ -1,6 +1,6 @@
 import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { CITIES, DESCRIPTIONS } from '../const.js';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 
 const MAX_PICTURES = 5;
 

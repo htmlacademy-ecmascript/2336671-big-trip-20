@@ -1,6 +1,6 @@
 import { OFFERS, EVENTS } from '../const.js';
 import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 
 const MAX_OFFERS = 5;
 
