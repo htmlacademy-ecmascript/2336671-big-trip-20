@@ -27,8 +27,8 @@ export default class EventsPresenter {
   }
 
   init () {
-    this.#eventPoints = [...this.#pointsModel.points];
-    this.#sourcedEventPoints = [...this.#pointsModel.points];
+    this.#eventPoints = [...this.#pointsModel.points].sort((a, b) => a.dateFrom - b.dateFrom);
+    this.#sourcedEventPoints = [...this.#pointsModel.points].sort((a, b) => a.dateFrom - b.dateFrom);
     this.#renderEventsList();
   }
 
