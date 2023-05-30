@@ -5,7 +5,6 @@ import { CITIES, EVENTS } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 import flatpickr from 'flatpickr';
-import rangePlugin from 'flatpickr/dist/plugins/rangePlugin.js';
 import 'flatpickr/dist/flatpickr.min.css';
 
 function createCityElements (cities) {
@@ -147,7 +146,8 @@ export default class EditPointView extends AbstractStatefulView {
   #handleFormCancel = null;
   #handleFormDelete = null;
 
-  #datepicker = null;
+  #startDatepicker = null;
+  #endDatepicker = null;
 
   constructor ({point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
@@ -243,10 +243,15 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  #dateChangeHandler = ([dateFrom, dateTo]) => {
+  #startDateChangeHandler = ([dateFrom]) => {
     this.updateElement({
       dateFrom: dateFrom,
-      dateTo: dateTo
+    });
+  };
+
+  #endDateChangeHandler = ([dateTo]) => {
+    this.updateElement({
+      dateTo: dateTo,
     });
   };
 
@@ -254,18 +259,25 @@ export default class EditPointView extends AbstractStatefulView {
     const startDate = this.element.querySelector('#event-start-time-1');
     const endDate = this.element.querySelector('#event-end-time-1');
 
-    this.#datepicker = flatpickr(
+    this.#startDatepicker = flatpickr(
       startDate,
       {
         enableTime: true,
         'time_24hr': true,
         dateFormat: 'd/m/y H:i',
-        'plugins': [
-          new rangePlugin({
-            input: endDate
-          })
-        ],
-        onChange: this.#dateChangeHandler,
+        maxDate: this._state.dateTo,
+        onChange: this.#startDateChangeHandler,
+      }
+    );
+
+    this.#endDatepicker = flatpickr(
+      endDate,
+      {
+        enableTime: true,
+        'time_24hr': true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.dateFrom,
+        onChange: this.#endDateChangeHandler,
       }
     );
   }
