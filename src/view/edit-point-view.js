@@ -4,6 +4,10 @@ import dayjs from 'dayjs';
 import { CITIES, EVENTS } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
+import flatpickr from 'flatpickr';
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin.js';
+import 'flatpickr/dist/flatpickr.min.css';
+
 function createCityElements (cities) {
   return (
     cities.map((city) => (`<option value="${city}"></option>`)).join(' ')
@@ -143,6 +147,8 @@ export default class EditPointView extends AbstractStatefulView {
   #handleFormCancel = null;
   #handleFormDelete = null;
 
+  #datepicker = null;
+
   constructor ({point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
     this._setState(EditPointView.parsePointToState(point));
@@ -168,6 +174,8 @@ export default class EditPointView extends AbstractStatefulView {
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
     form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+
+    this.#setDatePicker();
   };
 
   #onFormSubmitClick = (evt) => {
@@ -234,6 +242,34 @@ export default class EditPointView extends AbstractStatefulView {
 
     }
   };
+
+  #dateChangeHandler = ([dateFrom, dateTo]) => {
+    this.updateElement({
+      dateFrom: dateFrom,
+      dateTo: dateTo
+    });
+    console.log('date updated');
+  };
+
+  #setDatePicker () {
+    const startDate = this.element.querySelector('#event-start-time-1');
+    const endDate = this.element.querySelector('#event-end-time-1');
+
+    this.#datepicker = flatpickr(
+      startDate,
+      {
+        enableTime: true,
+        'time_24hr': true,
+        dateFormat: 'd/m/y H:i',
+        'plugins': [
+          new rangePlugin({
+            input: endDate
+          })
+        ],
+        onChange: this.#dateChangeHandler,
+      }
+    );
+  }
 
   static parsePointToState = (point) => ({...point});
 
