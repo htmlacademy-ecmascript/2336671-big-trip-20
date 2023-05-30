@@ -30,18 +30,21 @@ function createEventsElements (events) {
 
 function createOffersList (allOffers, checkedOffers) {
   const newOffers = [];
+  let counter = 1;
 
   allOffers.forEach((offer) => {
     const isChecked = checkedOffers.includes(offer) ? 'checked' : '';
+
     newOffers.push(`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
-        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-${counter}" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
+        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-${counter}">
           <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </label>
       </div>`);
+    counter += 1;
   });
 
   return newOffers.join('');
@@ -161,15 +164,15 @@ export default class EditPointView extends AbstractStatefulView {
     form.addEventListener('reset', this.#onFormResetClick);
 
     form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
-    form.querySelector('.event__type-group').addEventListener('click', this.#onEventTypeClick);
+    form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
-    form.querySelector('.event__available-offers').addEventListener('click', this.#onOfferClick);
+    form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
   };
 
   #onFormSubmitClick = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(EditPointView._state);
   };
 
   #onFormResetClick = (evt) => {
@@ -182,7 +185,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormCancel();
   };
 
-  #onEventTypeClick = (evt) => {
+  #onEventTypeChange = (evt) => {
+    evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       this.updateElement({
         type: evt.target.value
@@ -191,7 +195,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #onDestinationChange = (evt) => {
-
+    evt.preventDefault();
     const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
@@ -203,7 +207,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #onPriceChange = (evt) => {
-
+    evt.preventDefault();
     const newPrice = parseFloat(evt.target.value);
 
     if (!isNaN(newPrice)) {
@@ -217,7 +221,8 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #onOfferClick = (evt) => {
+  #onOfferChange = (evt) => {
+    evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
       const offersIds = checkedOffers.map((offer) => offer.dataset.id);
