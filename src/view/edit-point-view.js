@@ -217,7 +217,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     evt.preventDefault();
-    const newPrice = parseFloat(evt.target.value);
+    const newPrice = Math.abs(parseFloat(evt.target.value));
 
     if (!isNaN(newPrice)) {
       this._setState({
@@ -226,7 +226,7 @@ export default class EditPointView extends AbstractStatefulView {
       return;
     }
     this._setState({
-      basePrice: ''
+      basePrice: 0
     });
   };
 
