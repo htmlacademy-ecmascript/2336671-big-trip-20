@@ -1,6 +1,7 @@
-import EditPointView from '../view/edit-point-view';
 import TripEventsItemView from '../view/trip-events_item.js';
+import EditPointView from '../view/edit-point-view.js';
 import { remove, render, replace } from '../framework/render';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -62,6 +63,7 @@ export default class EventPresenter {
 
   resetView () {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#point);
       this.#replaceEditToItem();
     }
   }
@@ -74,6 +76,7 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#point);
       this.#replaceEditToItem();
     }
   };
@@ -99,11 +102,13 @@ export default class EventPresenter {
     this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite });
   };
 
-  #handleSubmitClick = () => {
+  #handleSubmitClick = (task) => {
+    this.#handleDataChange(task);
     this.#replaceEditToItem();
   };
 
   #handleCancelClick = () => {
+    this.#eventEditComponent.reset(this.#point);
     this.#replaceEditToItem();
   };
 
