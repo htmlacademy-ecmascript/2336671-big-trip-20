@@ -1,5 +1,5 @@
 import TripEventsItemView from '../view/trip-events_item.js';
-import EditPointView from '../View/edit-point-view.js';
+import EditPointView from '../view/edit-point-view.js';
 import { remove, render, replace } from '../framework/render';
 
 
