@@ -248,7 +248,6 @@ export default class EditPointView extends AbstractStatefulView {
       dateFrom: dateFrom,
       dateTo: dateTo
     });
-    console.log('date updated');
   };
 
   #setDatePicker () {
