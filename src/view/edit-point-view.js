@@ -145,7 +145,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   constructor ({point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
-    this._setState(point);
+    this._setState(EditPointView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmitClick;
     this.#handleFormCancel = onFormCancelClick;
     this.#handleFormDelete = onFormDeleteClick;
@@ -172,7 +172,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onFormSubmitClick = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(EditPointView._state);
+    this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
   #onFormResetClick = (evt) => {
@@ -189,6 +189,7 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       this.updateElement({
+        offers: [],
         type: evt.target.value
       });
     }
@@ -233,4 +234,13 @@ export default class EditPointView extends AbstractStatefulView {
 
     }
   };
+
+  static parsePointToState = (point) => ({...point});
+
+  static parseStateToPoint = (state) => ({...state});
+
+  reset (point) {
+    this.updateElement(EditPointView.parsePointToState(point));
+  }
+
 }
