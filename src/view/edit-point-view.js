@@ -4,6 +4,9 @@ import dayjs from 'dayjs';
 import { CITIES, EVENTS } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
 function createCityElements (cities) {
   return (
     cities.map((city) => (`<option value="${city}"></option>`)).join(' ')
@@ -143,6 +146,9 @@ export default class EditPointView extends AbstractStatefulView {
   #handleFormCancel = null;
   #handleFormDelete = null;
 
+  #startDatepicker = null;
+  #endDatepicker = null;
+
   constructor ({point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
     this._setState(EditPointView.parsePointToState(point));
@@ -168,6 +174,8 @@ export default class EditPointView extends AbstractStatefulView {
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
     form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+
+    this.#setDatePicker();
   };
 
   #onFormSubmitClick = (evt) => {
@@ -209,7 +217,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     evt.preventDefault();
-    const newPrice = parseFloat(evt.target.value);
+    const newPrice = Math.abs(parseFloat(evt.target.value));
 
     if (!isNaN(newPrice)) {
       this._setState({
@@ -218,7 +226,7 @@ export default class EditPointView extends AbstractStatefulView {
       return;
     }
     this._setState({
-      basePrice: ''
+      basePrice: 0
     });
   };
 
@@ -234,6 +242,45 @@ export default class EditPointView extends AbstractStatefulView {
 
     }
   };
+
+  #startDateChangeHandler = ([dateFrom]) => {
+    this.updateElement({
+      dateFrom: dateFrom,
+    });
+  };
+
+  #endDateChangeHandler = ([dateTo]) => {
+    this.updateElement({
+      dateTo: dateTo,
+    });
+  };
+
+  #setDatePicker () {
+    const startDate = this.element.querySelector('#event-start-time-1');
+    const endDate = this.element.querySelector('#event-end-time-1');
+
+    this.#startDatepicker = flatpickr(
+      startDate,
+      {
+        enableTime: true,
+        'time_24hr': true,
+        dateFormat: 'd/m/y H:i',
+        maxDate: this._state.dateTo,
+        onChange: this.#startDateChangeHandler,
+      }
+    );
+
+    this.#endDatepicker = flatpickr(
+      endDate,
+      {
+        enableTime: true,
+        'time_24hr': true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.dateFrom,
+        onChange: this.#endDateChangeHandler,
+      }
+    );
+  }
 
   static parsePointToState = (point) => ({...point});
 
