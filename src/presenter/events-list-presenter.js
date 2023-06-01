@@ -58,17 +58,6 @@ export default class EventsPresenter {
     this.#eventPresenters.set(point.id, eventPresenter);
   }
 
-  #renderEvents() {
-    render (this.#eventsListComponent, this.#eventContainer);
-
-    this.points.forEach((point) => this.#renderEvent(point));
-  }
-
-  #clearEvents() {
-    this.#eventPresenters.forEach((presenter) => presenter.destroy());
-    this.#eventPresenters.clear();
-  }
-
   #renderEventsList() {
     if (!this.points.length) {
       this.#renderEmptyList();
@@ -76,7 +65,9 @@ export default class EventsPresenter {
     }
 
     this.#renderSort();
-    this.#renderEvents();
+
+    render (this.#eventsListComponent, this.#eventContainer);
+    this.points.forEach((point) => this.#renderEvent(point));
   }
 
   #clearEventsList({resetSortType = false} = {}) {
