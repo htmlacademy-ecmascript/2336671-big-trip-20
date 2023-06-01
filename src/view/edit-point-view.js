@@ -167,7 +167,7 @@ export default class EditPointView extends AbstractStatefulView {
     const form = this.element.querySelector('form');
 
     form.addEventListener('submit', this.#onFormSubmitClick);
-    form.addEventListener('reset', this.#onFormResetClick);
+    form.addEventListener('reset', this.#onFormDeleteClick);
 
     form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
     form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
@@ -183,9 +183,9 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
-  #onFormResetClick = (evt) => {
+  #onFormDeleteClick = (evt) => {
     evt.preventDefault();
-    this.#handleFormDelete();
+    this.#handleFormDelete(EditPointView.parseStateToPoint(this._state));
   };
 
   #onCancelButtonClick = (evt) => {

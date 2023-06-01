@@ -1,10 +1,11 @@
 import TripEventsListView from '../view/trip-events_list.js';
 import SortingView from '../view/sorting-view.js';
 import TripEventsListEmptyView from '../view/trip-events_list-empty.js';
-import { render } from '../framework/render.js';
+import { remove, render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
-import { SortType } from '../const.js';
+import { SortType, UserAction, UpdateType } from '../const.js';
 import { getDuration } from '../utils/point.js';
+
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
@@ -21,23 +22,22 @@ export default class EventsPresenter {
   constructor({eventContainer, pointsModel}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   get points () {
     switch (this.#currentSortType) {
       case SortType.DAY:
-        [...this.#pointsModel.points].sort((a, b) => a.dateFrom - b.dateFrom);
-        break;
+        return [...this.#pointsModel.points].sort((a, b) => a.dateFrom - b.dateFrom);
       case SortType.TIME:
-        [...this.#pointsModel.points].sort((a, b) => {
+        return [...this.#pointsModel.points].sort((a, b) => {
           const durationA = getDuration(a.dateFrom, a.dateTo);
           const durationB = getDuration(b.dateFrom, b.dateTo);
           return durationB - durationA;
         });
-        break;
       case SortType.PRICE:
-        [...this.#pointsModel.points].sort((a, b) => b.basePrice - a.basePrice);
-        break;
+        return [...this.#pointsModel.points].sort((a, b) => b.basePrice - a.basePrice);
     }
 
     return this.#pointsModel.points;
@@ -47,28 +47,10 @@ export default class EventsPresenter {
     this.#renderEventsList();
   }
 
-  #renderEventsList() {
-    if (!this.points.length) {
-      this.#renderEmptyList();
-      return;
-    }
-
-    this.#renderSort();
-    this.#renderEvents();
-  }
-
-  #handleEventChange = (updatedEvent) => {
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
-  };
-
-  #handleModeChange = () => {
-    this.#eventPresenters.forEach((presenter) => presenter.resetView());
-  };
-
   #renderEvent(point) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventsListComponent.element,
-      onDataChange: this.#handleEventChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
     });
     eventPresenter.init(point);
@@ -82,14 +64,76 @@ export default class EventsPresenter {
     this.points.forEach((point) => this.#renderEvent(point));
   }
 
-  #clearEventsList() {
+  #clearEvents() {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
+  }
+
+  #renderEventsList() {
+    if (!this.points.length) {
+      this.#renderEmptyList();
+      return;
+    }
+
+    this.#renderSort();
+    this.#renderEvents();
+  }
+
+  #clearEventsList({resetSortType = false} = {}) {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+
+    remove(this.#sortComponent);
+    remove(this.#emptyListComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY;
+    }
   }
 
   #renderEmptyList() {
     render(this.#emptyListComponent, this.#eventContainer);
   }
+
+  #renderSort() {
+    this.#sortComponent = new SortingView({currentSortType: this.#currentSortType, onSortChange: this.#handleSortChange});
+
+    render (this.#sortComponent, this.#eventContainer);
+  }
+
+  #handleModeChange = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#eventPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearEventsList();
+        this.#renderEventsList();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearEventsList({resetSortType: true});
+        this.#renderEventsList();
+        break;
+    }
+  };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPoint(updateType, update);
+        break;
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, update);
+        break;
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, update);
+        break;
+    }
+  };
 
   #handleSortChange = (sortType) => {
     if(this.#currentSortType === sortType) {
@@ -97,12 +141,6 @@ export default class EventsPresenter {
     }
     this.#currentSortType = sortType;
     this.#clearEventsList();
-    this.#renderEvents();
+    this.#renderEventsList();
   };
-
-  #renderSort() {
-    this.#sortComponent = new SortingView({onSortChange: this.#handleSortChange});
-
-    render (this.#sortComponent, this.#eventContainer);
-  }
 }
