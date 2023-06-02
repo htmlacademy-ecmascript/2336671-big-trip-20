@@ -49,8 +49,8 @@ export default class SortingView extends AbstractView {
   }
 
   #sortChangeClick = (evt) => {
-
     if (evt.target.tagName === 'INPUT') {
+      evt.preventDefault();
       this.#handleSortChange(evt.target.id);
     }
   };
