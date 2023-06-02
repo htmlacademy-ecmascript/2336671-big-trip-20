@@ -3,48 +3,63 @@ import SortingView from '../view/sorting-view.js';
 import TripEventsListEmptyView from '../view/trip-events_list-empty.js';
 import { remove, render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
-import { SortType, UserAction, UpdateType } from '../const.js';
+import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { getDuration } from '../utils/point.js';
+import { filter } from '../utils/filter.js';
 
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
   #sortComponent = null;
-  #emptyListComponent = new TripEventsListEmptyView();
+  #emptyListComponent = null;
 
   #eventContainer = null;
   #pointsModel = null;
+  #filterModel = null;
+
+  #filterType = null;
 
   #eventPresenters = new Map();
 
   #currentSortType = SortType.DAY;
 
-  constructor({eventContainer, pointsModel}) {
+  constructor({eventContainer, pointsModel, filterModel}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points () {
+    this.#filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#pointsModel.points].sort((a, b) => a.dateFrom - b.dateFrom);
+        return filteredPoints.sort((a, b) => a.dateFrom - b.dateFrom);
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort((a, b) => {
+        return filteredPoints.sort((a, b) => {
           const durationA = getDuration(a.dateFrom, a.dateTo);
           const durationB = getDuration(b.dateFrom, b.dateTo);
           return durationB - durationA;
         });
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort((a, b) => b.basePrice - a.basePrice);
+        return filteredPoints.sort((a, b) => b.basePrice - a.basePrice);
     }
 
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   init () {
     this.#renderEventsList();
+  }
+
+  createPoint () {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   }
 
   #renderEvent(point) {
@@ -83,6 +98,7 @@ export default class EventsPresenter {
   }
 
   #renderEmptyList() {
+    this.#emptyListComponent = new TripEventsListEmptyView({filterType: this.#filterType});
     render(this.#emptyListComponent, this.#eventContainer);
   }
 

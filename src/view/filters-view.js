@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createFilterItemTemplate (filter, isChecked) {
+function createFilterItemTemplate (filter, currentFilter) {
   const {type, isDisabled} = filter;
 
   return (
@@ -10,8 +10,8 @@ function createFilterItemTemplate (filter, isChecked) {
         class="trip-filters__filter-input  visually-hidden"
         type="radio"
         name="trip-filter"
-        value="${(type).toLowerCase()}"
-        ${isChecked ? 'checked' : ''}
+        value="${type}"
+        ${(type).toLowerCase() === currentFilter.toLowerCase() ? 'checked' : ''}
         ${isDisabled ? 'disabled' : ''}
       >
       <label class="trip-filters__filter-label" for="filter-${(type).toLowerCase()}">${type}</label>
@@ -20,10 +20,10 @@ function createFilterItemTemplate (filter, isChecked) {
 
 }
 
-function createFiltersTemplate (filterItems) {
+function createFiltersTemplate (filterItems, currentFilter) {
 
   const filterItemsTemplate = filterItems
-    .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+    .map((filter) => createFilterItemTemplate(filter, currentFilter))
     .join('');
 
   return (
@@ -38,23 +38,24 @@ export default class FiltersView extends AbstractView {
 
   #filters = null;
   #onFilterClick = null;
+  #currentFilter = null;
 
-  constructor ({filters, onFilterClick}) {
+  constructor ({filters, onFilterClick, currentFilter}) {
     super();
     this.#filters = filters;
     this.#onFilterClick = onFilterClick;
-    this.element.addEventListener('click', this.#FilterHandler);
+    this.#currentFilter = currentFilter;
+
+    this.element.addEventListener('change', this.#filterHandler);
   }
 
   get template () {
-    return createFiltersTemplate(this.#filters);
+    return createFiltersTemplate(this.#filters, this.#currentFilter);
   }
 
-  #FilterHandler = (evt) => {
-    if (evt.target.tagName === 'INPUT') {
-      evt.preventDefault();
-      this.#onFilterClick(evt.target.value);
-    }
+  #filterHandler = (evt) => {
+    evt.preventDefault();
+    this.#onFilterClick(evt.target.value);
   };
 
 }
