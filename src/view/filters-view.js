@@ -37,14 +37,24 @@ function createFiltersTemplate (filterItems) {
 export default class FiltersView extends AbstractView {
 
   #filters = null;
+  #onFilterClick = null;
 
-  constructor ({filters}) {
+  constructor ({filters, onFilterClick}) {
     super();
     this.#filters = filters;
+    this.#onFilterClick = onFilterClick;
+    this.element.addEventListener('click', this.#FilterHandler);
   }
 
   get template () {
     return createFiltersTemplate(this.#filters);
   }
+
+  #FilterHandler = (evt) => {
+    if (evt.target.tagName === 'INPUT') {
+      evt.preventDefault();
+      this.#onFilterClick(evt.target.value);
+    }
+  };
 
 }
