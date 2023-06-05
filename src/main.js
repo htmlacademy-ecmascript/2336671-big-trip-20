@@ -7,12 +7,13 @@ import FIlterModel from './model/filters-model.js';
 const tripMainElement = document.querySelector('.trip-main');
 const filtersElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
+const newEventButtonElement = document.querySelector('.trip-main');
 
 const pointsModel = new PointsModel();
 const filterModel = new FIlterModel();
 
 const tripInfoPresenter = new TripInfoPresenter({eventContainer: tripMainElement, pointsModel});
-const eventsPresenter = new EventsPresenter({eventContainer: tripEventsElement, pointsModel, filterModel});
+const eventsPresenter = new EventsPresenter({newEventButtonContainer: newEventButtonElement, eventContainer: tripEventsElement, pointsModel, filterModel});
 const filtersPresenter = new FiltersPresenter({eventContainer: filtersElement, pointsModel, filterModel});
 
 tripInfoPresenter.init();

@@ -7,14 +7,17 @@ import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { getDuration } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
+import NewPointButtonView from '../view/new-point-button-view.js';
 
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
+  #newEventComponent = null;
   #sortComponent = null;
   #emptyListComponent = null;
 
   #eventContainer = null;
+
   #pointsModel = null;
   #filterModel = null;
 
@@ -22,21 +25,25 @@ export default class EventsPresenter {
 
   #eventPresenters = new Map();
   #newEventPresenter = null;
-  #newEventElement = document.querySelector('.trip-main__event-add-btn');
 
   #isNewPoint = false;
 
   #currentSortType = SortType.DAY;
 
-  constructor({eventContainer, pointsModel, filterModel}) {
+  constructor({newEventButtonContainer, eventContainer, pointsModel, filterModel}) {
     this.#eventContainer = eventContainer;
+
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-    this.#newEventElement.addEventListener('click',this.#onNewEventClick);
+    this.#newEventComponent = new NewPointButtonView({
+      onNewPointButtonClick: this.#onNewEventClick
+    });
+
+    render(this.#newEventComponent, newEventButtonContainer);
 
     this.#newEventPresenter = new NewPointPresenter({
       pointsListContainer: this.#eventsListComponent.element,
@@ -169,13 +176,13 @@ export default class EventsPresenter {
 
   #onNewEventClick = () => {
     this.#isNewPoint = true;
-    this.#newEventElement.disabled = true;
+    this.#newEventComponent.element.disabled = true;
     this.#createPoint();
   };
 
   #handleNewTaskFormClose = () => {
     this.#isNewPoint = false;
-    this.#newEventElement.disabled = false;
+    this.#newEventComponent.element.disabled = false;
     if (!this.points.length && !this.#isNewPoint) {
       remove(this.#sortComponent);
       this.#renderEmptyList();
