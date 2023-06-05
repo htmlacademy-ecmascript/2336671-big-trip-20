@@ -220,6 +220,8 @@ export default class NewPointView extends AbstractStatefulView {
       this.updateElement({
         destination: newDestination.id
       });
+    } else {
+      evt.target.value = '';
     }
   };
 

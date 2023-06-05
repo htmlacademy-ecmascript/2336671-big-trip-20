@@ -210,8 +210,9 @@ export default class EditPointView extends AbstractStatefulView {
       this.updateElement({
         destination: newDestination.id
       });
+    } else {
+      evt.target.value = '';
     }
-
   };
 
   #onPriceChange = (evt) => {
