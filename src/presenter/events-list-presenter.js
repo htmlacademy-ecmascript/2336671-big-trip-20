@@ -6,6 +6,7 @@ import EventPresenter from './event-presenter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { getDuration } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 
 export default class EventsPresenter {
@@ -20,6 +21,10 @@ export default class EventsPresenter {
   #filterType = null;
 
   #eventPresenters = new Map();
+  #newEventPresenter = null;
+  #newEventElement = document.querySelector('.trip-main__event-add-btn');
+
+  #isNewPoint = false;
 
   #currentSortType = SortType.DAY;
 
@@ -30,6 +35,14 @@ export default class EventsPresenter {
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.#newEventElement.addEventListener('click',this.#onNewEventClick);
+
+    this.#newEventPresenter = new NewPointPresenter({
+      pointsListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onPointDestroy: this.#handleNewTaskFormClose,
+    });
   }
 
   get points () {
@@ -57,9 +70,10 @@ export default class EventsPresenter {
     this.#renderEventsList();
   }
 
-  createPoint () {
+  #createPoint () {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newEventPresenter.init();
   }
 
   #renderEvent(point) {
@@ -74,7 +88,7 @@ export default class EventsPresenter {
   }
 
   #renderEventsList() {
-    if (!this.points.length) {
+    if (!this.points.length && !this.#isNewPoint) {
       this.#renderEmptyList();
       return;
     }
@@ -86,6 +100,7 @@ export default class EventsPresenter {
   }
 
   #clearEventsList({resetSortType = false} = {}) {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
@@ -109,6 +124,7 @@ export default class EventsPresenter {
   }
 
   #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -149,5 +165,20 @@ export default class EventsPresenter {
     this.#currentSortType = sortType;
     this.#clearEventsList();
     this.#renderEventsList();
+  };
+
+  #onNewEventClick = () => {
+    this.#isNewPoint = true;
+    this.#newEventElement.disabled = true;
+    this.#createPoint();
+  };
+
+  #handleNewTaskFormClose = () => {
+    this.#isNewPoint = false;
+    this.#newEventElement.disabled = false;
+    if (!this.points.length && !this.#isNewPoint) {
+      remove(this.#sortComponent);
+      this.#renderEmptyList();
+    }
   };
 }

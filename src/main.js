@@ -8,8 +8,6 @@ const tripMainElement = document.querySelector('.trip-main');
 const filtersElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
 
-const newEventElement = document.querySelector('.trip-main__event-add-btn');
-
 const pointsModel = new PointsModel();
 const filterModel = new FIlterModel();
 
@@ -20,9 +18,3 @@ const filtersPresenter = new FiltersPresenter({eventContainer: filtersElement, p
 tripInfoPresenter.init();
 filtersPresenter.init();
 eventsPresenter.init();
-
-newEventElement.addEventListener('click', () => {
-  console.log('click');
-  newEventElement.disabled = true;
-  eventsPresenter.createPoint();
-});
