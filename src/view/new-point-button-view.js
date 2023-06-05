@@ -22,7 +22,6 @@ export default class NewPointButtonView extends AbstractView {
 
   #onNewEventClick = (evt) => {
     evt.preventDefault();
-    console.log('click');
     this.#onNewPointButtonClick();
   };
 }
