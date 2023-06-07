@@ -16,8 +16,8 @@ const createIdGenerator = () => {
   };
 };
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
+const offerTitleJoin = (oferTitle) => oferTitle.split(' ').join('-');
 
-export { getRandomArrayElement, getRandomInteger, createIdGenerator, updateItem };
+const toSentenceCase = (string) => string.charAt(0).toUpperCase() + string.substr(1).toLowerCase();
+
+export { getRandomArrayElement, getRandomInteger, createIdGenerator, offerTitleJoin, toSentenceCase };

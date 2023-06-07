@@ -1,6 +1,7 @@
 import TripEventsItemView from '../view/trip-events_item.js';
 import EditPointView from '../view/edit-point-view.js';
 import { remove, render, replace } from '../framework/render';
+import { UserAction, UpdateType } from '../const.js';
 
 
 const Mode = {
@@ -99,11 +100,19 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite }
+    );
   };
 
   #handleSubmitClick = (task) => {
-    this.#handleDataChange(task);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      task
+    );
     this.#replaceEditToItem();
   };
 
@@ -112,7 +121,11 @@ export default class EventPresenter {
     this.#replaceEditToItem();
   };
 
-  #handleDeleteClick = () => {
-    //to-do
+  #handleDeleteClick = (task) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      task
+    );
   };
 }
