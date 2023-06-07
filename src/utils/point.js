@@ -19,8 +19,6 @@ const getDuration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
 const getEventDuration = (dateFrom, dateTo) => {
   const diffDays = dayjs(dateTo).diff(dayjs(dateFrom), 'day', true);
 
-  const testDuration = dayjs.duration(dayjs(dateTo) - dayjs(dateFrom));
-
   const days = Math.floor(diffDays);
   const hours = Math.floor((diffDays - days) * 24);
   const minutes = Math.floor((((diffDays - days) * 24) - hours) * 60);
@@ -28,13 +26,13 @@ const getEventDuration = (dateFrom, dateTo) => {
   let eventDuration = '';
 
   if (days > 0) {
-    eventDuration += `${testDuration.format('DD[D]')} `;
+    eventDuration += `${days}D `;
   }
   if (days > 0 || hours > 0) {
-    eventDuration += `${testDuration.format('HH[H]')}`;
+    eventDuration += `${hours}H`;
   }
   if (days > 0 || hours > 0 || minutes > 0) {
-    eventDuration += ` ${testDuration.format('mm[M]')}`;
+    eventDuration += ` ${minutes}M`;
   }
 
   return eventDuration;
