@@ -3,6 +3,8 @@ import { getDestinationById } from '../mocks/destinations.js';
 import { getOfferById } from '../mocks/offers.js';
 import { humanizePointDate } from '../utils/point.js';
 
+const MAX_TRIP_LENGTH = 3;
+
 const humanizeTripDates = (startDate, endDate) => {
   const start = startDate.split(' ').reverse();
   const end = endDate.split(' ').reverse();
@@ -38,7 +40,7 @@ function createTripInfoTemplate (points) {
   return (`
   <section class="trip-main__trip-info  trip-info">
   <div class="trip-info__main">
-    <h1 class="trip-info__title">${destinations.length > 3 ? `${destinations[0]} &mdash; ... &mdash; ${destinations[destinations.length - 1]}` : destinations.join(' &mdash; ')}</h1>
+    <h1 class="trip-info__title">${destinations.length > MAX_TRIP_LENGTH ? `${destinations[0]} &mdash; ... &mdash; ${destinations[destinations.length - 1]}` : destinations.join(' &mdash; ')}</h1>
 
     <p class="trip-info__dates">${humanizeTripDate}</p>
   </div>

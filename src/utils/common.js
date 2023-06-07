@@ -16,4 +16,8 @@ const createIdGenerator = () => {
   };
 };
 
-export { getRandomArrayElement, getRandomInteger, createIdGenerator };
+const offerTitleJoin = (oferTitle) => oferTitle.split(' ').join('-');
+
+const toSentenceCase = (string) => string.charAt(0).toUpperCase() + string.substr(1).toLowerCase();
+
+export { getRandomArrayElement, getRandomInteger, createIdGenerator, offerTitleJoin, toSentenceCase };

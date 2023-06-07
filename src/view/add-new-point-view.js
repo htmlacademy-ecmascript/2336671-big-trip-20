@@ -5,6 +5,7 @@ import { CITIES, EVENTS } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
+import { offerTitleJoin, toSentenceCase } from '../utils/common.js';
 
 
 const BLANK_POINT = {
@@ -25,7 +26,7 @@ function createCityElements (cities) {
 
 function createPictureElements (pictures) {
   return (
-    pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="Event photo">`
+    pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
     )).join('')
   );
 }
@@ -35,7 +36,7 @@ function createEventsElements (events) {
     events.map((event) => (
       `<div class="event__type-item">
         <input id="event-type-${event}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${event}">
-        <label class="event__type-label  event__type-label--${event}" for="event-type-${event}-1">${event.charAt(0).toUpperCase() + event.substr(1).toLowerCase()}</label>
+        <label class="event__type-label  event__type-label--${event}" for="event-type-${event}-1">${toSentenceCase(event)}</label>
       </div>`
     )).join('')
   );
@@ -66,8 +67,8 @@ function createOffersList (allOffers, checkedOffers) {
 
     newOffers.push(`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-${counter}" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
-        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-${counter}">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleJoin(offer.title)}-${counter}" type="checkbox" name="event-offer-${offerTitleJoin(offer.title)}" data-id="${offer.id}" ${isChecked}>
+        <label class="event__offer-label" for="event-offer-${offerTitleJoin(offer.title)}-${counter}">
           <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${offer.price}</span>
@@ -126,10 +127,10 @@ function createNewPointTemplate (point) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YYYYTHH:mm') : ''}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YYYY HH:mm') : ''}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -163,6 +164,9 @@ export default class NewPointView extends AbstractStatefulView {
 
   #handleFormSubmit = null;
   #handleFormCancel = null;
+
+  #startDatePicker = null;
+  #endDatePicker = null;
 
   constructor ({onFormSubmitClick, onFormCancelClick}) {
     super();
@@ -269,7 +273,7 @@ export default class NewPointView extends AbstractStatefulView {
     const startDate = this.element.querySelector('#event-start-time-1');
     const endDate = this.element.querySelector('#event-end-time-1');
 
-    flatpickr(
+    this.#startDatePicker = flatpickr(
       startDate,
       {
         enableTime: true,
@@ -283,7 +287,7 @@ export default class NewPointView extends AbstractStatefulView {
       }
     );
 
-    flatpickr(
+    this.#endDatePicker = flatpickr(
       endDate,
       {
         enableTime: true,
@@ -296,6 +300,18 @@ export default class NewPointView extends AbstractStatefulView {
         onChange: this.#endDateChangeHandler,
       }
     );
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#startDatePicker && this.#endDatePicker) {
+      this.#startDatePicker.destroy();
+      this.#endDatePicker.destroy();
+
+      this.#startDatePicker = null;
+      this.#endDatePicker = null;
+    }
   }
 
   static parsePointToState = (point) => ({...point});

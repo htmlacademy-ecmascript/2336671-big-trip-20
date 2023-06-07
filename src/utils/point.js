@@ -17,18 +17,24 @@ const humanizePointTime = (time) => time ? dayjs(time).format(TIME_FORMAT) : '';
 const getDuration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
 
 const getEventDuration = (dateFrom, dateTo) => {
-  const diff = dayjs.duration(dayjs(dateTo) - dayjs(dateFrom));
+  const diffDays = dayjs(dateTo).diff(dayjs(dateFrom), 'day', true);
+
+  const testDuration = dayjs.duration(dayjs(dateTo) - dayjs(dateFrom));
+
+  const days = Math.floor(diffDays);
+  const hours = Math.floor((diffDays - days) * 24);
+  const minutes = Math.floor((((diffDays - days) * 24) - hours) * 60);
 
   let eventDuration = '';
 
-  if (diff.days() > 0) {
-    eventDuration += `${diff.days()}D `;
+  if (days > 0) {
+    eventDuration += `${testDuration.format('DD[D]')} `;
   }
-  if (diff.days() > 0 || diff.hours() > 0) {
-    eventDuration += `${diff.hours()}H`;
+  if (days > 0 || hours > 0) {
+    eventDuration += `${testDuration.format('HH[H]')}`;
   }
-  if (diff.days() > 0 || diff.hours() > 0 || diff.minutes() > 0) {
-    eventDuration += ` ${diff.minutes()}M`;
+  if (days > 0 || hours > 0 || minutes > 0) {
+    eventDuration += ` ${testDuration.format('mm[M]')}`;
   }
 
   return eventDuration;
