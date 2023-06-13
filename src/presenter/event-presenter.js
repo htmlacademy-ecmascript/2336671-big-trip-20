@@ -13,6 +13,7 @@ export default class EventPresenter {
   #handleDataChange = null;
   #handleModeChange = null;
 
+  #pointsModel = null;
   #point = null;
 
   #eventComponent = null;
@@ -20,7 +21,8 @@ export default class EventPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor ({eventsListContainer, onDataChange, onModeChange}) {
+  constructor ({pointsModel, eventsListContainer, onDataChange, onModeChange}) {
+    this.#pointsModel = pointsModel;
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -33,12 +35,14 @@ export default class EventPresenter {
     const prevEventEditComponent = this.#eventEditComponent;
 
     this.#eventComponent = new TripEventsItemView({
+      pointsModel: this.#pointsModel,
       point: this.#point,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick
     });
 
     this.#eventEditComponent = new EditPointView({
+      pointsModel: this.#pointsModel,
       point: this.#point,
       onFormSubmitClick: this.#handleSubmitClick,
       onFormCancelClick: this.#handleCancelClick,

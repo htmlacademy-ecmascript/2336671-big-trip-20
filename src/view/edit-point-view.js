@@ -1,5 +1,3 @@
-import { allDestinations, getDestinationById } from '../mocks/destinations.js';
-import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
 import dayjs from 'dayjs';
 import { CITIES, EVENTS } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
@@ -55,16 +53,16 @@ function createOffersList (allOffers, checkedOffers) {
   return newOffers.join('');
 }
 
-function createEditPointTemplate (point) {
+function createEditPointTemplate (point, pointsModel) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
 
-  const destinations = getDestinationById(destination);
+  const destinations = pointsModel.getDestinationById(destination);
 
-  const allOffers = getAllOffersByType(type);
+  const allOffers = pointsModel.getAllOffersByType(type);
 
   const checkedOffers = [];
   offers.forEach((id) => {
-    checkedOffers.push(getOfferById(id));
+    checkedOffers.push(pointsModel.getOfferById(id));
   });
 
   return (`
@@ -146,6 +144,7 @@ function createEditPointTemplate (point) {
 
 export default class EditPointView extends AbstractStatefulView {
 
+  #pointsModel = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #handleFormDelete = null;
@@ -153,8 +152,10 @@ export default class EditPointView extends AbstractStatefulView {
   #startDatePicker = null;
   #endDatePicker = null;
 
-  constructor ({point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
+  constructor ({pointsModel, point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
+    this.#pointsModel = pointsModel;
+
     this._setState(EditPointView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmitClick;
     this.#handleFormCancel = onFormCancelClick;
@@ -164,7 +165,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template () {
-    return createEditPointTemplate(this._state);
+    return createEditPointTemplate(this._state, this.#pointsModel);
   }
 
   _restoreHandlers = () => {
@@ -209,7 +210,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#pointsModel.destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({

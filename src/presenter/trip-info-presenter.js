@@ -18,12 +18,10 @@ export default class TripInfoPresenter {
   }
 
   init () {
-    this.#eventPoints = [...this.#pointsModel.points];
-
-    if (!this.#eventPoints.length) {
+    if (!this.#pointsModel.points.length) {
       return;
     }
-    this.#tripInfoComponent = new TripInfoView({points: this.#eventPoints});
+    this.#tripInfoComponent = new TripInfoView({pointsModel: this.#pointsModel});
     render(this.#tripInfoComponent, this.#eventContainer, RenderPosition.AFTERBEGIN);
   }
 

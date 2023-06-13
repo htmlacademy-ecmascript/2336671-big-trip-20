@@ -1,6 +1,4 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { allDestinations, getDestinationById } from '../mocks/destinations.js';
-import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
 import { CITIES, EVENTS } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -80,18 +78,18 @@ function createOffersList (allOffers, checkedOffers) {
   return newOffers.join('');
 }
 
-function createNewPointTemplate (point) {
+function createNewPointTemplate (point, pointsModel) {
 
   const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
 
-  const destinations = getDestinationById(destination);
+  const destinations = pointsModel.getDestinationById(destination);
 
-  const allOffers = getAllOffersByType(type);
+  const allOffers = pointsModel.getAllOffersByType(type);
 
   const checkedOffers = [];
 
   offers.forEach((id) => {
-    checkedOffers.push(getOfferById(id));
+    checkedOffers.push(pointsModel.getOfferById(id));
   });
 
   return (`
@@ -162,15 +160,17 @@ function createNewPointTemplate (point) {
 
 export default class NewPointView extends AbstractStatefulView {
 
+  #pointsModel = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
 
   #startDatePicker = null;
   #endDatePicker = null;
 
-  constructor ({onFormSubmitClick, onFormCancelClick}) {
+  constructor ({pointsModel, onFormSubmitClick, onFormCancelClick}) {
     super();
 
+    this.#pointsModel = pointsModel;
     this._setState(NewPointView.parsePointToState(BLANK_POINT));
     this.#handleFormSubmit = onFormSubmitClick;
     this.#handleFormCancel = onFormCancelClick;
@@ -179,7 +179,7 @@ export default class NewPointView extends AbstractStatefulView {
   }
 
   get template () {
-    return createNewPointTemplate(NewPointView.parsePointToState(this._state));
+    return createNewPointTemplate(NewPointView.parsePointToState(this._state), this.#pointsModel);
   }
 
   _restoreHandlers = () => {
@@ -218,7 +218,7 @@ export default class NewPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#pointsModel.destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({

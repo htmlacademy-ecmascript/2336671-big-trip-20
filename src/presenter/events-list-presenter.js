@@ -1,17 +1,20 @@
 import TripEventsListView from '../view/trip-events_list.js';
 import SortingView from '../view/sorting-view.js';
 import TripEventsListEmptyView from '../view/trip-events_list-empty.js';
+import NewPointButtonView from '../view/new-point-button-view.js';
+import TripEventsListLodingView from '../view/trip-events_list-loading.js';
 import { remove, render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { getDuration } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
-import NewPointButtonView from '../view/new-point-button-view.js';
 
 
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
+  #loadingComponent = new TripEventsListLodingView();
+
   #newEventComponent = null;
   #sortComponent = null;
   #emptyListComponent = null;
@@ -27,6 +30,7 @@ export default class EventsPresenter {
   #newEventPresenter = null;
 
   #isNewPoint = false;
+  #isLoading = true;
 
   #currentSortType = SortType.DAY;
 
@@ -46,6 +50,7 @@ export default class EventsPresenter {
     render(this.#newEventComponent, newEventButtonContainer);
 
     this.#newEventPresenter = new NewPointPresenter({
+      pointsModel: this.#pointsModel,
       pointsListContainer: this.#eventsListComponent.element,
       onDataChange: this.#handleViewAction,
       onPointDestroy: this.#handleNewTaskFormClose,
@@ -85,6 +90,7 @@ export default class EventsPresenter {
 
   #renderEvent(point) {
     const eventPresenter = new EventPresenter({
+      pointsModel: this.#pointsModel,
       eventsListContainer: this.#eventsListComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
@@ -95,6 +101,12 @@ export default class EventsPresenter {
   }
 
   #renderEventsList() {
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (!this.points.length && !this.#isNewPoint) {
       this.#renderEmptyList();
       return;
@@ -117,6 +129,10 @@ export default class EventsPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventContainer);
   }
 
   #renderEmptyList() {
@@ -146,6 +162,11 @@ export default class EventsPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearEventsList({resetSortType: true});
+        this.#renderEventsList();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderEventsList();
         break;
     }
