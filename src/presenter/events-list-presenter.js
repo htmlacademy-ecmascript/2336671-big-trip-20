@@ -103,6 +103,7 @@ export default class EventsPresenter {
   #renderEventsList() {
 
     if (this.#isLoading) {
+      this.#newEventComponent.element.disabled = true;
       this.#renderLoading();
       return;
     }
@@ -166,6 +167,7 @@ export default class EventsPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
+        this.#newEventComponent.element.disabled = false;
         remove(this.#loadingComponent);
         this.#renderEventsList();
         break;
