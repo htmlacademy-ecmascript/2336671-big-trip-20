@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { offerTitleJoin } from '../utils/common.js';
@@ -29,7 +28,7 @@ function createEventsElements (events) {
   );
 }
 
-function createOffersList (allOffers, checkedOffers) {
+function createOffersList (allOffers, checkedOffers, isDisabled) {
   const newOffers = [];
   let counter = 1;
 
@@ -39,7 +38,7 @@ function createOffersList (allOffers, checkedOffers) {
 
     newOffers.push(`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleJoin(offer.title)}-${counter}" type="checkbox" name="event-offer-${offerTitleJoin(offer.title)}" data-id="${offer.id}" ${isChecked}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleJoin(offer.title)}-${counter}" type="checkbox" name="event-offer-${offerTitleJoin(offer.title)}" data-id="${offer.id}" ${isChecked} ${isDisabled ? 'disabled' : ''}>
           <label class="event__offer-label" for="event-offer-${offerTitleJoin(offer.title)}-${counter}">
             <span class="event__offer-title">${offer.title}</span>
             +€&nbsp;
@@ -53,7 +52,16 @@ function createOffersList (allOffers, checkedOffers) {
 }
 
 function createEditPointTemplate (point, pointsModel) {
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
+  const {
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    offers,
+    type,
+    isSaving,
+    isDeleting,
+    isDisabled,} = point;
 
   const destinations = pointsModel.getDestinationById(destination);
 
@@ -71,7 +79,7 @@ function createEditPointTemplate (point, pointsModel) {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -87,7 +95,7 @@ function createEditPointTemplate (point, pointsModel) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
             ${createCityElements(citiesList)}
           </datalist>
@@ -95,10 +103,10 @@ function createEditPointTemplate (point, pointsModel) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
           —
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -106,12 +114,12 @@ function createEditPointTemplate (point, pointsModel) {
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+        <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -120,7 +128,7 @@ function createEditPointTemplate (point, pointsModel) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersList(allOffersByType, offers)}
+            ${createOffersList(allOffersByType, offers, isDisabled)}
           </div>
         </section>
 
@@ -211,7 +219,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     if (newDestination) {
       this.updateElement({
-        destination: newDestination.id
+        destination: newDestination.id,
       });
     } else {
       evt.target.value = '';
@@ -303,9 +311,21 @@ export default class EditPointView extends AbstractStatefulView {
     }
   }
 
-  static parsePointToState = (point) => ({...point});
+  static parsePointToState = (point) => ({
+    ...point,
+    isSaving: false,
+    isDeleting: false,
+    isDisabled: false,
+  });
 
-  static parseStateToPoint = (state) => ({...state});
+  static parseStateToPoint = (state) => {
+    const task = {...state};
+
+    delete task.isSaving;
+    delete task.isDeleting;
+    delete task.isDisabled;
+    return task;
+  };
 
   reset (point) {
     this.updateElement(EditPointView.parsePointToState(point));

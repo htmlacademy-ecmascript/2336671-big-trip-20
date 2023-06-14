@@ -55,16 +55,20 @@ function createDestinationElement (destination) {
     </section>`);
 }
 
-function createOffersList (allOffers, checkedOffers = []) {
+function createOffersList (allOffers, isDisabled) {
   const newOffers = [];
   let counter = 1;
 
   allOffers.forEach((offer) => {
-    const isChecked = checkedOffers.includes(offer) ? 'checked' : '';
-
     newOffers.push(`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleJoin(offer.title)}-${counter}" type="checkbox" name="event-offer-${offerTitleJoin(offer.title)}" data-id="${offer.id}" ${isChecked}>
+        <input
+          class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${offerTitleJoin(offer.title)}-${counter}"
+          type="checkbox"
+          name="event-offer-${offerTitleJoin(offer.title)}"
+          data-id="${offer.id}"
+          ${isDisabled ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${offerTitleJoin(offer.title)}-${counter}">
           <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
@@ -79,7 +83,7 @@ function createOffersList (allOffers, checkedOffers = []) {
 
 function createNewPointTemplate (point, pointsModel) {
 
-  const {basePrice, dateFrom, dateTo, destination, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, type, isSaving, isDisabled} = point;
 
   const destinations = pointsModel.getDestinationById(destination);
 
@@ -97,7 +101,7 @@ function createNewPointTemplate (point, pointsModel) {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -113,7 +117,7 @@ function createNewPointTemplate (point, pointsModel) {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations ? destinations.name : ''}" list="destination-list-1" required>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations ? destinations.name : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createCityElements(citiesList)}
             </datalist>
@@ -121,10 +125,10 @@ function createNewPointTemplate (point, pointsModel) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -132,18 +136,18 @@ function createNewPointTemplate (point, pointsModel) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" required>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" required ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createOffersList(allOffers)}
+              ${createOffersList(allOffers, isDisabled)}
             </div>
           </section>
 
@@ -175,7 +179,7 @@ export default class NewPointView extends AbstractStatefulView {
   }
 
   get template () {
-    return createNewPointTemplate(NewPointView.parsePointToState(this._state), this.#pointsModel);
+    return createNewPointTemplate(this._state, this.#pointsModel);
   }
 
   _restoreHandlers = () => {
@@ -310,8 +314,18 @@ export default class NewPointView extends AbstractStatefulView {
     }
   }
 
-  static parsePointToState = (point) => ({...point});
+  static parsePointToState = (point) => ({
+    ...point,
+    isSaving: false,
+    isDisabled: false,
+  });
 
-  static parseStateToPoint = (state) => ({...state});
+  static parseStateToPoint = (state) => {
+    const task = {...state};
+
+    delete task.isSaving;
+    delete task.isDisabled;
+    return task;
+  };
 
 }

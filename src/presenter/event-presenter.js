@@ -78,6 +78,24 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   }
 
+  setSaving () {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting () {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -117,7 +135,6 @@ export default class EventPresenter {
       UpdateType.MINOR,
       task
     );
-    this.#replaceEditToItem();
   };
 
   #handleCancelClick = () => {
