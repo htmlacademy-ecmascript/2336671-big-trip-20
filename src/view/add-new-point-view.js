@@ -79,7 +79,7 @@ function createOffersList (allOffers, checkedOffers = []) {
 
 function createNewPointTemplate (point, pointsModel) {
 
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, type} = point;
 
   const destinations = pointsModel.getDestinationById(destination);
 
@@ -87,8 +87,6 @@ function createNewPointTemplate (point, pointsModel) {
 
   const eventsList = pointsModel.offers.map((offer) => offer.type);
   const citiesList = pointsModel.destinations.map((item) => item.name);
-
-  const checkedOffers = pointsModel.getCheckedOffers(offers);
 
   return (`
     <li class="trip-events__item">
