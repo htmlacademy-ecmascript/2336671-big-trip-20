@@ -96,6 +96,23 @@ export default class EventPresenter {
     }
   }
 
+  setAborting () {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventComponent.shake();
+      return;
+    }
+
+    const resetState = () => {
+      this.#eventEditComponent.updateElement({
+        isSaving: false,
+        isDeleting: false,
+        isDisabled: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetState);
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
