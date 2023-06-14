@@ -1,5 +1,4 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { CITIES, EVENTS } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
@@ -56,7 +55,7 @@ function createDestinationElement (destination) {
     </section>`);
 }
 
-function createOffersList (allOffers, checkedOffers) {
+function createOffersList (allOffers, checkedOffers = []) {
   const newOffers = [];
   let counter = 1;
 
@@ -86,11 +85,10 @@ function createNewPointTemplate (point, pointsModel) {
 
   const allOffers = pointsModel.getAllOffersByType(type);
 
-  const checkedOffers = [];
+  const eventsList = pointsModel.offers.map((offer) => offer.type);
+  const citiesList = pointsModel.destinations.map((item) => item.name);
 
-  offers.forEach((id) => {
-    checkedOffers.push(pointsModel.getOfferById(id));
-  });
+  const checkedOffers = pointsModel.getCheckedOffers(offers);
 
   return (`
     <li class="trip-events__item">
@@ -107,7 +105,7 @@ function createNewPointTemplate (point, pointsModel) {
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
 
-                ${createEventsElements(EVENTS)}
+                ${createEventsElements(eventsList)}
 
               </fieldset>
             </div>
@@ -119,7 +117,7 @@ function createNewPointTemplate (point, pointsModel) {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations ? destinations.name : ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
-              ${createCityElements(CITIES)}
+              ${createCityElements(citiesList)}
             </datalist>
           </div>
 
@@ -147,7 +145,7 @@ function createNewPointTemplate (point, pointsModel) {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createOffersList(allOffers, checkedOffers)}
+              ${createOffersList(allOffers)}
             </div>
           </section>
 

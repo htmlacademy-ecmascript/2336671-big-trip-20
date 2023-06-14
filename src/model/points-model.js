@@ -95,10 +95,7 @@ export default class PointsModel extends Observable {
     return adaptedPoint;
   }
 
-  getDestinationById = (id) => {
-    const foundDestination = this.#destinations.find((destination) => destination.id === id);
-    return foundDestination;
-  };
+  getDestinationById = (id) => this.#destinations.find((destination) => destination.id === id);
 
   getOfferById = (id) => {
     let offerItem;
@@ -112,6 +109,14 @@ export default class PointsModel extends Observable {
     return offerItem;
   };
 
+  getCheckedOffers = (offers) => {
+    const offersList = [];
+    offers.forEach((id) => {
+      offersList.push(this.getOfferById(id));
+    });
+    return offersList;
+  };
+
   getAllOffersByType = (type) => {
     let offersByType = [];
     this.#offers.forEach((offer) => {
@@ -121,5 +126,9 @@ export default class PointsModel extends Observable {
     });
     return offersByType;
   };
+
+  getCitiesNames = () => this.#destinations.map((destination) => destination.name);
+
+  getEventsTypes = () => this.#offers.map((offer) => offer.type);
 
 }
