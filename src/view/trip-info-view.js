@@ -1,6 +1,4 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDestinationById } from '../mocks/destinations.js';
-import { getOfferById } from '../mocks/offers.js';
 import { humanizePointDate } from '../utils/point.js';
 
 const MAX_TRIP_LENGTH = 3;
@@ -17,16 +15,18 @@ const humanizeTripDates = (startDate, endDate) => {
 
 };
 
-function createTripInfoTemplate (points) {
+function createTripInfoTemplate (pointsModel) {
+
+  const points = pointsModel.points;
 
   const destinations = [];
 
   let sum = 0;
 
   points.forEach((point) => {
-    destinations.push(getDestinationById(point.destination).name);
+    destinations.push(pointsModel.getDestinationById(point.destination).name);
 
-    const pointOffers = point.offers.map((offerId) => getOfferById(offerId));
+    const pointOffers = point.offers.map((offerId) => pointsModel.getOfferById(offerId));
     const offersPrice = pointOffers.reduce((total, offer) => total + offer.price, 0);
 
     sum += point.basePrice + offersPrice;
@@ -53,14 +53,14 @@ function createTripInfoTemplate (points) {
 
 export default class TripInfoView extends AbstractView {
 
-  #points = null;
+  #pointsModel = null;
 
-  constructor ({points}) {
+  constructor ({pointsModel}) {
     super();
-    this.#points = points;
+    this.#pointsModel = pointsModel;
   }
 
   get template () {
-    return createTripInfoTemplate(this.#points);
+    return createTripInfoTemplate(this.#pointsModel);
   }
 }

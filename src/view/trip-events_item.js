@@ -1,6 +1,4 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDestinationById } from '../mocks/destinations.js';
-import { getOfferById } from '../mocks/offers.js';
 import { humanizePointDate, humanizePointTime, getEventDuration } from '../utils/point.js';
 import dayjs from 'dayjs';
 
@@ -16,20 +14,20 @@ function createSelectedOffers (offers) {
   );
 }
 
-function createTripEventsItemTemplate (point) {
+function createTripEventsItemTemplate (point, pointsModel) {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
 
   const date = humanizePointDate(dateFrom);
   const timeFrom = humanizePointTime(dateFrom);
   const timeTo = humanizePointTime(dateTo);
-  const destinationObject = getDestinationById(destination);
+  const destinationObject = pointsModel.getDestinationById(destination);
   const eventDuration = getEventDuration(dateFrom, dateTo);
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
 
   const offersList = [];
 
   offers.forEach((id) => {
-    offersList.push(getOfferById(id));
+    offersList.push(pointsModel.getOfferById(id));
   });
 
   return (
@@ -71,12 +69,14 @@ function createTripEventsItemTemplate (point) {
 
 export default class TripEventsItemView extends AbstractView {
 
+  #pointsModel = null;
   #point = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor ({point, onEditClick, onFavoriteClick}) {
+  constructor ({pointsModel, point, onEditClick, onFavoriteClick}) {
     super();
+    this.#pointsModel = pointsModel;
     this.#point = point;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
@@ -89,7 +89,7 @@ export default class TripEventsItemView extends AbstractView {
   }
 
   get template() {
-    return createTripEventsItemTemplate(this.#point);
+    return createTripEventsItemTemplate(this.#point, this.#pointsModel);
   }
 
   #editEventHandler = (evt) => {

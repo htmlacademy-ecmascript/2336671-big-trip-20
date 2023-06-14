@@ -1,7 +1,4 @@
-import { allDestinations, getDestinationById } from '../mocks/destinations.js';
-import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
 import dayjs from 'dayjs';
-import { CITIES, EVENTS } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 import flatpickr from 'flatpickr';
@@ -36,36 +33,34 @@ function createOffersList (allOffers, checkedOffers) {
   const newOffers = [];
   let counter = 1;
 
-
   allOffers.forEach((offer) => {
-    const isChecked = checkedOffers.includes(offer) ? 'checked' : '';
+
+    const isChecked = checkedOffers.includes(offer.id) ? 'checked' : '';
 
     newOffers.push(`
-      <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleJoin(offer.title)}-${counter}" type="checkbox" name="event-offer-${offerTitleJoin(offer.title)}" data-id="${offer.id}" ${isChecked}>
-        <label class="event__offer-label" for="event-offer-${offerTitleJoin(offer.title)}-${counter}">
-          <span class="event__offer-title">${offer.title}</span>
-          +€&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`);
+        <div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleJoin(offer.title)}-${counter}" type="checkbox" name="event-offer-${offerTitleJoin(offer.title)}" data-id="${offer.id}" ${isChecked}>
+          <label class="event__offer-label" for="event-offer-${offerTitleJoin(offer.title)}-${counter}">
+            <span class="event__offer-title">${offer.title}</span>
+            +€&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`);
     counter += 1;
   });
 
   return newOffers.join('');
 }
 
-function createEditPointTemplate (point) {
+function createEditPointTemplate (point, pointsModel) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
 
-  const destinations = getDestinationById(destination);
+  const destinations = pointsModel.getDestinationById(destination);
 
-  const allOffers = getAllOffersByType(type);
+  const allOffersByType = pointsModel.getAllOffersByType(type);
 
-  const checkedOffers = [];
-  offers.forEach((id) => {
-    checkedOffers.push(getOfferById(id));
-  });
+  const eventsList = pointsModel.offers.map((offer) => offer.type);
+  const citiesList = pointsModel.destinations.map((item) => item.name);
 
   return (`
   <li class="trip-events__item">
@@ -82,7 +77,7 @@ function createEditPointTemplate (point) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${createEventsElements(EVENTS)}
+              ${createEventsElements(eventsList)}
 
             </fieldset>
           </div>
@@ -94,7 +89,7 @@ function createEditPointTemplate (point) {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${createCityElements(CITIES)}
+            ${createCityElements(citiesList)}
           </datalist>
         </div>
 
@@ -125,7 +120,7 @@ function createEditPointTemplate (point) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersList(allOffers, checkedOffers)}
+            ${createOffersList(allOffersByType, offers)}
           </div>
         </section>
 
@@ -146,6 +141,7 @@ function createEditPointTemplate (point) {
 
 export default class EditPointView extends AbstractStatefulView {
 
+  #pointsModel = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #handleFormDelete = null;
@@ -153,8 +149,10 @@ export default class EditPointView extends AbstractStatefulView {
   #startDatePicker = null;
   #endDatePicker = null;
 
-  constructor ({point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
+  constructor ({pointsModel, point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
+    this.#pointsModel = pointsModel;
+
     this._setState(EditPointView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmitClick;
     this.#handleFormCancel = onFormCancelClick;
@@ -164,7 +162,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template () {
-    return createEditPointTemplate(this._state);
+    return createEditPointTemplate(this._state, this.#pointsModel);
   }
 
   _restoreHandlers = () => {
@@ -209,7 +207,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#pointsModel.destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({

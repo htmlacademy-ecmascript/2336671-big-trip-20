@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 
 export default class NewPointPresenter {
 
+  #pointsModel = null;
   #pointsListContainer = null;
 
   #handleDataChange = null;
@@ -12,15 +13,17 @@ export default class NewPointPresenter {
 
   #pointEditComponent = null;
 
-  constructor ({pointsListContainer, onDataChange, onPointDestroy}) {
+  constructor ({pointsModel, pointsListContainer, onDataChange, onPointDestroy}) {
     this.#pointsListContainer = pointsListContainer;
 
+    this.#pointsModel = pointsModel;
     this.#handleDataChange = onDataChange;
     this.#handlePointDestroy = onPointDestroy;
   }
 
   init () {
     this.#pointEditComponent = new NewPointView ({
+      pointsModel: this.#pointsModel,
       onFormSubmitClick: this.#handleFormSubmitClick,
       onFormCancelClick: this.#handleFormCancelClick,
     });

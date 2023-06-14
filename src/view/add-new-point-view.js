@@ -1,7 +1,4 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { allDestinations, getDestinationById } from '../mocks/destinations.js';
-import { getAllOffersByType, getOfferById } from '../mocks/offers.js';
-import { CITIES, EVENTS } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
@@ -58,7 +55,7 @@ function createDestinationElement (destination) {
     </section>`);
 }
 
-function createOffersList (allOffers, checkedOffers) {
+function createOffersList (allOffers, checkedOffers = []) {
   const newOffers = [];
   let counter = 1;
 
@@ -80,19 +77,16 @@ function createOffersList (allOffers, checkedOffers) {
   return newOffers.join('');
 }
 
-function createNewPointTemplate (point) {
+function createNewPointTemplate (point, pointsModel) {
 
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, type} = point;
 
-  const destinations = getDestinationById(destination);
+  const destinations = pointsModel.getDestinationById(destination);
 
-  const allOffers = getAllOffersByType(type);
+  const allOffers = pointsModel.getAllOffersByType(type);
 
-  const checkedOffers = [];
-
-  offers.forEach((id) => {
-    checkedOffers.push(getOfferById(id));
-  });
+  const eventsList = pointsModel.offers.map((offer) => offer.type);
+  const citiesList = pointsModel.destinations.map((item) => item.name);
 
   return (`
     <li class="trip-events__item">
@@ -109,7 +103,7 @@ function createNewPointTemplate (point) {
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
 
-                ${createEventsElements(EVENTS)}
+                ${createEventsElements(eventsList)}
 
               </fieldset>
             </div>
@@ -121,7 +115,7 @@ function createNewPointTemplate (point) {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations ? destinations.name : ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
-              ${createCityElements(CITIES)}
+              ${createCityElements(citiesList)}
             </datalist>
           </div>
 
@@ -149,7 +143,7 @@ function createNewPointTemplate (point) {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createOffersList(allOffers, checkedOffers)}
+              ${createOffersList(allOffers)}
             </div>
           </section>
 
@@ -162,15 +156,17 @@ function createNewPointTemplate (point) {
 
 export default class NewPointView extends AbstractStatefulView {
 
+  #pointsModel = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
 
   #startDatePicker = null;
   #endDatePicker = null;
 
-  constructor ({onFormSubmitClick, onFormCancelClick}) {
+  constructor ({pointsModel, onFormSubmitClick, onFormCancelClick}) {
     super();
 
+    this.#pointsModel = pointsModel;
     this._setState(NewPointView.parsePointToState(BLANK_POINT));
     this.#handleFormSubmit = onFormSubmitClick;
     this.#handleFormCancel = onFormCancelClick;
@@ -179,7 +175,7 @@ export default class NewPointView extends AbstractStatefulView {
   }
 
   get template () {
-    return createNewPointTemplate(NewPointView.parsePointToState(this._state));
+    return createNewPointTemplate(NewPointView.parsePointToState(this._state), this.#pointsModel);
   }
 
   _restoreHandlers = () => {
@@ -218,7 +214,7 @@ export default class NewPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#pointsModel.destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({
