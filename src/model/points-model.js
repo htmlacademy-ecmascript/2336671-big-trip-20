@@ -110,38 +110,6 @@ export default class PointsModel extends Observable {
     return adaptedPoint;
   }
 
-  getDestinationById = (id) => this.#destinations.find((destination) => destination.id === id);
-
-  getOfferById = (id) => {
-    let offerItem;
-    this.#offers.forEach((offer) => {
-      offer.offers.forEach((item) => {
-        if (item.id === id) {
-          offerItem = item;
-        }
-      });
-    });
-    return offerItem;
-  };
-
-  getCheckedOffers = (offers) => {
-    const offersList = [];
-    offers.forEach((id) => {
-      offersList.push(this.getOfferById(id));
-    });
-    return offersList;
-  };
-
-  getAllOffersByType = (type) => {
-    let offersByType = [];
-    this.#offers.forEach((offer) => {
-      if (offer.type === type) {
-        offersByType = offer.offers;
-      }
-    });
-    return offersByType;
-  };
-
   getCitiesNames = () => this.#destinations.map((destination) => destination.name);
 
   getEventsTypes = () => this.#offers.map((offer) => offer.type);

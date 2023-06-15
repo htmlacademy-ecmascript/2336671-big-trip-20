@@ -3,6 +3,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { offerTitleJoin } from '../utils/common.js';
+import { getDestinationById } from '../utils/point.js';
 
 function createCityElements (cities) {
   return (
@@ -28,13 +29,13 @@ function createEventsElements (events) {
   );
 }
 
-function createOffersList (allOffers, checkedOffers, isDisabled) {
+function createOffersList (offersByType, offers, isDisabled) {
   const newOffers = [];
   let counter = 1;
 
-  allOffers.forEach((offer) => {
+  offersByType.forEach((offer) => {
 
-    const isChecked = checkedOffers.includes(offer.id) ? 'checked' : '';
+    const isChecked = offers.includes(offer.id) ? 'checked' : '';
 
     newOffers.push(`
         <div class="event__offer-selector">
@@ -51,7 +52,12 @@ function createOffersList (allOffers, checkedOffers, isDisabled) {
   return newOffers.join('');
 }
 
-function createEditPointTemplate (point, pointsModel) {
+function createEditPointTemplate (
+  point,
+  cities,
+  events,
+  allOffers,
+  destinations) {
   const {
     basePrice,
     dateFrom,
@@ -63,12 +69,8 @@ function createEditPointTemplate (point, pointsModel) {
     isDeleting,
     isDisabled,} = point;
 
-  const destinations = pointsModel.getDestinationById(destination);
-
-  const allOffersByType = pointsModel.getAllOffersByType(type);
-
-  const eventsList = pointsModel.offers.map((offer) => offer.type);
-  const citiesList = pointsModel.destinations.map((item) => item.name);
+  const thisDestination = getDestinationById(destination, destinations);
+  const offersType = allOffers.find((offer) => offer.type === type);
 
   return (`
   <li class="trip-events__item">
@@ -85,7 +87,7 @@ function createEditPointTemplate (point, pointsModel) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${createEventsElements(eventsList)}
+              ${createEventsElements(events)}
 
             </fieldset>
           </div>
@@ -95,9 +97,9 @@ function createEditPointTemplate (point, pointsModel) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
-            ${createCityElements(citiesList)}
+            ${createCityElements(cities)}
           </datalist>
         </div>
 
@@ -128,16 +130,16 @@ function createEditPointTemplate (point, pointsModel) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersList(allOffersByType, offers, isDisabled)}
+            ${createOffersList(offersType.offers, offers, isDisabled)}
           </div>
         </section>
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destinations.description}</p>
+          <p class="event__destination-description">${thisDestination.description}</p>
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${createPictureElements(destinations.pictures)}
+              ${createPictureElements(thisDestination.pictures)}
             </div>
           </div>
         </section>
@@ -149,7 +151,11 @@ function createEditPointTemplate (point, pointsModel) {
 
 export default class EditPointView extends AbstractStatefulView {
 
-  #pointsModel = null;
+  #cities = null;
+  #events = null;
+  #offers = null;
+  #destinations = null;
+
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #handleFormDelete = null;
@@ -157,9 +163,12 @@ export default class EditPointView extends AbstractStatefulView {
   #startDatePicker = null;
   #endDatePicker = null;
 
-  constructor ({pointsModel, point, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
+  constructor ({point, cities, events, offers, destinations, onFormSubmitClick, onFormCancelClick, onFormDeleteClick}) {
     super();
-    this.#pointsModel = pointsModel;
+    this.#cities = cities;
+    this.#events = events;
+    this.#offers = offers;
+    this.#destinations = destinations;
 
     this._setState(EditPointView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmitClick;
@@ -170,7 +179,13 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template () {
-    return createEditPointTemplate(this._state, this.#pointsModel);
+    return createEditPointTemplate(
+      this._state,
+      this.#cities,
+      this.#events,
+      this.#offers,
+      this.#destinations,
+    );
   }
 
   _restoreHandlers = () => {
@@ -215,7 +230,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = this.#pointsModel.destinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({

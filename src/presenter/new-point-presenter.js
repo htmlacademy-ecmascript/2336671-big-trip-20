@@ -21,8 +21,16 @@ export default class NewPointPresenter {
   }
 
   init () {
+    const destinations = this.#pointsModel.destinations;
+    const offers = this.#pointsModel.offers;
+    const events = this.#pointsModel.getEventsTypes();
+    const cities = this.#pointsModel.getCitiesNames();
+
     this.#pointEditComponent = new NewPointView ({
-      pointsModel: this.#pointsModel,
+      destinations: destinations,
+      offers: offers,
+      events: events,
+      cities: cities,
       onFormSubmitClick: this.#handleFormSubmitClick,
       onFormCancelClick: this.#handleFormCancelClick,
     });

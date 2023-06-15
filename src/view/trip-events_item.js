@@ -14,21 +14,26 @@ function createSelectedOffers (offers) {
   );
 }
 
-function createTripEventsItemTemplate (point, pointsModel) {
-  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
+function createTripEventsItemTemplate (point, destinations, allOffers) {
+  const {basePrice, dateFrom, dateTo, destination, offers, isFavorite, type} = point;
 
   const date = humanizePointDate(dateFrom);
   const timeFrom = humanizePointTime(dateFrom);
   const timeTo = humanizePointTime(dateTo);
-  const destinationObject = pointsModel.getDestinationById(destination);
+  const currentDestination = destinations.find((dest) => dest.id === destination);
+  const offersType = allOffers.find((offer) => offer.type === type);
+
+  const curentOffers = [];
+  offers.forEach((id) => {
+    offersType.offers.find((offer) => {
+      if(offer.id === id) {
+        curentOffers.push(offer);
+      }
+    });
+  });
+
   const eventDuration = getEventDuration(dateFrom, dateTo);
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
-
-  const offersList = [];
-
-  offers.forEach((id) => {
-    offersList.push(pointsModel.getOfferById(id));
-  });
 
   return (
     `<li class="trip-events__item">
@@ -37,7 +42,7 @@ function createTripEventsItemTemplate (point, pointsModel) {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destinationObject.name}</h3>
+        <h3 class="event__title">${type} ${currentDestination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${timeFrom}</time>
@@ -51,7 +56,7 @@ function createTripEventsItemTemplate (point, pointsModel) {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${createSelectedOffers(offersList)}
+          ${createSelectedOffers(curentOffers)}
         </ul>
         <button class="event__favorite-btn ${favorite}" type="button">
           <span class="visually-hidden">Add to favorite</span>
@@ -69,15 +74,18 @@ function createTripEventsItemTemplate (point, pointsModel) {
 
 export default class TripEventsItemView extends AbstractView {
 
-  #pointsModel = null;
   #point = null;
+  #destinations = null;
+  #offers = null;
+
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor ({pointsModel, point, onEditClick, onFavoriteClick}) {
+  constructor ({point, destinations, offers, onEditClick, onFavoriteClick}) {
     super();
-    this.#pointsModel = pointsModel;
     this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -89,7 +97,7 @@ export default class TripEventsItemView extends AbstractView {
   }
 
   get template() {
-    return createTripEventsItemTemplate(this.#point, this.#pointsModel);
+    return createTripEventsItemTemplate(this.#point, this.#destinations, this.#offers);
   }
 
   #editEventHandler = (evt) => {
