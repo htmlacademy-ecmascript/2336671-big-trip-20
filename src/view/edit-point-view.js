@@ -4,6 +4,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { offerTitleJoin } from '../utils/common.js';
 import { getDestinationById } from '../utils/point.js';
+import he from 'he';
 
 function createCityElements (cities) {
   return (
@@ -125,7 +126,7 @@ function createEditPointTemplate (
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination ? thisDestination.name : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination ? he.encode(thisDestination.name) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
           <datalist id="destination-list-1">
             ${createCityElements(cities)}
           </datalist>
@@ -144,7 +145,7 @@ function createEditPointTemplate (
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''} required>
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${basePrice}`)}" ${isDisabled ? 'disabled' : ''} required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>

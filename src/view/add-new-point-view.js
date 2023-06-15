@@ -4,6 +4,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
 import { offerTitleJoin, toSentenceCase } from '../utils/common.js';
 
+import he from 'he';
 
 const BLANK_POINT = {
   basePrice: '',
@@ -123,7 +124,7 @@ function createNewPointTemplate (point, destinations, allOffers, events, cities,
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination ? currentDestination.name : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createCityElements(cities)}
             </datalist>
@@ -142,7 +143,7 @@ function createNewPointTemplate (point, destinations, allOffers, events, cities,
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" required ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${basePrice}`)}" required ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
