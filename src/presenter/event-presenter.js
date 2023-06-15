@@ -155,11 +155,11 @@ export default class EventPresenter {
     );
   };
 
-  #handleSubmitClick = (task) => {
+  #handleSubmitClick = (point) => {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
-      task
+      point
     );
   };
 
@@ -168,11 +168,11 @@ export default class EventPresenter {
     this.#replaceEditToItem();
   };
 
-  #handleDeleteClick = (task) => {
+  #handleDeleteClick = (point) => {
     this.#handleDataChange(
       UserAction.DELETE_POINT,
       UpdateType.MINOR,
-      task
+      point
     );
   };
 }
