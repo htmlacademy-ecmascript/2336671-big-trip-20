@@ -132,10 +132,10 @@ function createNewPointTemplate (point, destinations, allOffers, events, cities,
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required autocomplete="off">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required autocomplete="off">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -143,7 +143,7 @@ function createNewPointTemplate (point, destinations, allOffers, events, cities,
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${basePrice}`)}" required ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${he.encode(`${basePrice}`)}" required ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -249,7 +249,7 @@ export default class NewPointView extends AbstractStatefulView {
     evt.preventDefault();
     const newPrice = Math.round(Math.abs(parseFloat(evt.target.value)));
 
-    if (isNaN(newPrice)) {
+    if (isNaN(newPrice) || newPrice === 0) {
       evt.target.value = '';
       this._setState({
         basePrice: ''
@@ -294,6 +294,7 @@ export default class NewPointView extends AbstractStatefulView {
     this.#startDatePicker = flatpickr(
       startDate,
       {
+        allowInput: true,
         enableTime: true,
         'time_24hr': true,
         dateFormat: 'd/m/y H:i',
@@ -308,6 +309,7 @@ export default class NewPointView extends AbstractStatefulView {
     this.#endDatePicker = flatpickr(
       endDate,
       {
+        allowInput: true,
         enableTime: true,
         'time_24hr': true,
         dateFormat: 'd/m/y H:i',
