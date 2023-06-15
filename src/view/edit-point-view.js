@@ -11,6 +11,22 @@ function createCityElements (cities) {
   );
 }
 
+function createDestinationElement (destination) {
+  return (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination.description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+
+          ${createPictureElements(destination.pictures)}
+
+        </div>
+      </div>
+    </section>`);
+}
+
 function createPictureElements (pictures) {
   return (
     pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
@@ -27,6 +43,18 @@ function createEventsElements (events) {
       </div>`
     )).join('')
   );
+}
+
+function createOffersElement(offersByType, offers, isDisabled) {
+  return (`
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${createOffersList(offersByType, offers, isDisabled)}
+      </div>
+    </section>
+  `);
 }
 
 function createOffersList (offersByType, offers, isDisabled) {
@@ -97,7 +125,7 @@ function createEditPointTemplate (
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination ? thisDestination.name : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
           <datalist id="destination-list-1">
             ${createCityElements(cities)}
           </datalist>
@@ -116,7 +144,7 @@ function createEditPointTemplate (
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''} required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -126,23 +154,9 @@ function createEditPointTemplate (
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        ${offersType.offers.length ? createOffersElement(offersType.offers, offers, isDisabled) : ''}
 
-          <div class="event__available-offers">
-            ${createOffersList(offersType.offers, offers, isDisabled)}
-          </div>
-        </section>
-
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${thisDestination.description}</p>
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${createPictureElements(thisDestination.pictures)}
-            </div>
-          </div>
-        </section>
+        ${thisDestination ? createDestinationElement(thisDestination) : ''}
       </section>
     </form>
   </li>`
@@ -198,7 +212,11 @@ export default class EditPointView extends AbstractStatefulView {
     form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
-    form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+    const eventOffers = form.querySelector('.event__available-offers');
+
+    if(eventOffers) {
+      eventOffers.addEventListener('change', this.#onOfferChange);
+    }
 
     this.#setDatePicker();
   };
@@ -238,6 +256,9 @@ export default class EditPointView extends AbstractStatefulView {
       });
     } else {
       evt.target.value = '';
+      this.updateElement({
+        destination: '',
+      });
     }
   };
 
@@ -245,14 +266,16 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const newPrice = Math.abs(parseFloat(evt.target.value));
 
-    if (!isNaN(newPrice)) {
+    if (isNaN(newPrice)) {
+      evt.target.value = '';
       this._setState({
-        basePrice: newPrice
+        basePrice: ''
       });
       return;
     }
+    evt.target.value = newPrice;
     this._setState({
-      basePrice: 0
+      basePrice: newPrice
     });
   };
 

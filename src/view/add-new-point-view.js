@@ -55,6 +55,18 @@ function createDestinationElement (destination) {
     </section>`);
 }
 
+function createOffersElement(offersByType, offers, isDisabled) {
+  return (`
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${createOffersList(offersByType, offers, isDisabled)}
+      </div>
+    </section>
+  `);
+}
+
 function createOffersList (offersByType, offers, isDisabled) {
   const newOffers = [];
   let counter = 1;
@@ -137,13 +149,8 @@ function createNewPointTemplate (point, destinations, allOffers, events, cities,
           <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-            <div class="event__available-offers">
-              ${createOffersList(offersType.offers, offers, isDisabled)}
-            </div>
-          </section>
+          ${offersType.offers.length ? createOffersElement(offersType.offers, offers, isDisabled) : ''}
 
           ${currentDestination ? createDestinationElement(currentDestination) : ''}
 
@@ -192,7 +199,11 @@ export default class NewPointView extends AbstractStatefulView {
     form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
-    form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+    const eventOffers = form.querySelector('.event__available-offers');
+
+    if(eventOffers) {
+      eventOffers.addEventListener('change', this.#onOfferChange);
+    }
 
     this.#setDatePicker();
   };
@@ -234,14 +245,16 @@ export default class NewPointView extends AbstractStatefulView {
     evt.preventDefault();
     const newPrice = Math.abs(parseFloat(evt.target.value));
 
-    if (!isNaN(newPrice)) {
+    if (isNaN(newPrice)) {
+      evt.target.value = '';
       this._setState({
-        basePrice: newPrice
+        basePrice: ''
       });
       return;
     }
+    evt.target.value = newPrice;
     this._setState({
-      basePrice: 0
+      basePrice: newPrice
     });
   };
 
