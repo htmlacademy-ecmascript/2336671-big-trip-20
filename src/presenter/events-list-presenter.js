@@ -10,6 +10,7 @@ import { getDuration } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import { remove, render } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import ErrorView from '../view/error-view.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 300,
@@ -18,6 +19,7 @@ const TimeLimit = {
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
   #loadingComponent = new TripEventsListLodingView();
+  #errorComponent = null;
 
   #newEventComponent = null;
   #sortComponent = null;
@@ -145,6 +147,11 @@ export default class EventsPresenter {
     render(this.#loadingComponent, this.#eventContainer);
   }
 
+  #renderError(data) {
+    this.#errorComponent = new ErrorView(data);
+    render(this.#errorComponent, this.#eventContainer);
+  }
+
   #renderEmptyList() {
     this.#emptyListComponent = new TripEventsListEmptyView({filterType: this.#filterType});
     render(this.#emptyListComponent, this.#eventContainer);
@@ -179,6 +186,12 @@ export default class EventsPresenter {
         this.#newEventComponent.element.disabled = false;
         remove(this.#loadingComponent);
         this.#renderEventsList();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        this.#newEventComponent.element.disabled = true;
+        remove(this.#loadingComponent);
+        this.#renderError(data);
         break;
     }
   };
