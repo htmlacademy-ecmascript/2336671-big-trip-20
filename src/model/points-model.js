@@ -36,6 +36,7 @@ export default class PointsModel extends Observable {
       this.#offers = offers;
       this.#destinations = destinations;
     } catch (err) {
+
       this.#points = [];
       this.#offers = [];
       this.#destinations = [];
@@ -48,10 +49,11 @@ export default class PointsModel extends Observable {
       const respose = await this.#pointsApiService.addPoint(update);
       const updatedPoint = this.#adaptToClient(respose);
 
-      this.#points = [updatedPoint, ...this.points];
+      this.#points = [updatedPoint, ...this.#points];
       this._notify(updateType, update);
 
     } catch(err) {
+
       throw new Error('Can\'t add point');
     }
   }
@@ -65,8 +67,11 @@ export default class PointsModel extends Observable {
 
     try {
       await this.#pointsApiService.deletePoint(update);
-      this.#points.splice(index, 1);
 
+      this.#points = [
+        ...this.#points.slice(0, index),
+        ...this.#points.slice(index + 1),
+      ];
       this._notify(updateType);
 
     } catch(err) {

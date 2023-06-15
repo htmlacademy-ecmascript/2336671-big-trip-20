@@ -334,12 +334,12 @@ export default class EditPointView extends AbstractStatefulView {
   });
 
   static parseStateToPoint = (state) => {
-    const task = {...state};
+    const point = {...state};
 
-    delete task.isSaving;
-    delete task.isDeleting;
-    delete task.isDisabled;
-    return task;
+    delete point.isSaving;
+    delete point.isDeleting;
+    delete point.isDisabled;
+    return point;
   };
 
   reset (point) {

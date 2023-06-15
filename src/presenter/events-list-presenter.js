@@ -62,7 +62,7 @@ export default class EventsPresenter {
       pointsModel: this.#pointsModel,
       pointsListContainer: this.#eventsListComponent.element,
       onDataChange: this.#handleViewAction,
-      onPointDestroy: this.#handleNewTaskFormClose,
+      onPointDestroy: this.#handleNewPointFormClose,
     });
   }
 
@@ -191,7 +191,7 @@ export default class EventsPresenter {
         this.#newEventPresenter.setSaving();
         try {
           await this.#pointsModel.addPoint(updateType, update);
-        }catch(err) {
+        } catch(err) {
           this.#newEventPresenter.setAborting();
         }
         break;
@@ -230,7 +230,7 @@ export default class EventsPresenter {
     this.#createPoint();
   };
 
-  #handleNewTaskFormClose = () => {
+  #handleNewPointFormClose = () => {
     this.#isNewPoint = false;
     this.#newEventComponent.element.disabled = false;
     if (!this.points.length && !this.#isNewPoint) {

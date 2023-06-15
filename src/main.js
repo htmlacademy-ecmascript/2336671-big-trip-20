@@ -24,7 +24,7 @@ const tripInfoPresenter = new TripInfoPresenter({eventContainer: tripMainElement
 const eventsPresenter = new EventsPresenter({newEventButtonContainer: newEventButtonElement, eventContainer: tripEventsElement, pointsModel, filterModel});
 const filtersPresenter = new FiltersPresenter({eventContainer: filtersElement, pointsModel, filterModel});
 
+pointsModel.init();
 tripInfoPresenter.init();
 filtersPresenter.init();
 eventsPresenter.init();
-pointsModel.init();
