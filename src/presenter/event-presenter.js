@@ -34,16 +34,25 @@ export default class EventPresenter {
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
+    const destinations = this.#pointsModel.destinations;
+    const offers = this.#pointsModel.offers;
+    const events = this.#pointsModel.getEventsTypes();
+    const cities = this.#pointsModel.getCitiesNames();
+
     this.#eventComponent = new TripEventsItemView({
-      pointsModel: this.#pointsModel,
+      destinations: destinations,
+      offers: offers,
       point: this.#point,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick
     });
 
     this.#eventEditComponent = new EditPointView({
-      pointsModel: this.#pointsModel,
       point: this.#point,
+      cities: cities,
+      events: events,
+      offers: offers,
+      destinations: destinations,
       onFormSubmitClick: this.#handleSubmitClick,
       onFormCancelClick: this.#handleCancelClick,
       onFormDeleteClick: this.#handleDeleteClick
@@ -76,6 +85,41 @@ export default class EventPresenter {
   destroy() {
     remove(this.#eventComponent);
     remove(this.#eventEditComponent);
+  }
+
+  setSaving () {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting () {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting () {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventComponent.shake();
+      return;
+    }
+
+    const resetState = () => {
+      this.#eventEditComponent.updateElement({
+        isSaving: false,
+        isDeleting: false,
+        isDisabled: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetState);
   }
 
   #escKeyDownHandler = (evt) => {
@@ -117,7 +161,6 @@ export default class EventPresenter {
       UpdateType.MINOR,
       task
     );
-    this.#replaceEditToItem();
   };
 
   #handleCancelClick = () => {

@@ -18,10 +18,16 @@ export default class TripInfoPresenter {
   }
 
   init () {
-    if (!this.#pointsModel.points.length) {
+    const points = this.#pointsModel.points;
+    points.sort((a, b) => a.dateFrom - b.dateFrom);
+
+    if (!points.length) {
       return;
     }
-    this.#tripInfoComponent = new TripInfoView({pointsModel: this.#pointsModel});
+    const destinations = this.#pointsModel.destinations;
+    const offers = this.#pointsModel.offers;
+
+    this.#tripInfoComponent = new TripInfoView({points, destinations, offers});
     render(this.#tripInfoComponent, this.#eventContainer, RenderPosition.AFTERBEGIN);
   }
 

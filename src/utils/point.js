@@ -11,12 +11,12 @@ dayjs.extend(isSameOrAfter);
 const DATE_FORMAT = 'D MMM';
 const TIME_FORMAT = 'HH:mm';
 
-const humanizePointDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
-const humanizePointTime = (time) => time ? dayjs(time).format(TIME_FORMAT) : '';
+export const humanizePointDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
+export const humanizePointTime = (time) => time ? dayjs(time).format(TIME_FORMAT) : '';
 
-const getDuration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
+export const getDuration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
 
-const getEventDuration = (dateFrom, dateTo) => {
+export const getEventDuration = (dateFrom, dateTo) => {
   const diffDays = dayjs(dateTo).diff(dayjs(dateFrom), 'day', true);
 
   const days = Math.floor(diffDays);
@@ -38,19 +38,31 @@ const getEventDuration = (dateFrom, dateTo) => {
   return eventDuration;
 };
 
-function isPointFuture(dateFrom) {
+export function isPointFuture(dateFrom) {
   return dateFrom && dayjs().isBefore(dateFrom, 'D');
 }
 
-function isPointPast(dateTo) {
+export function isPointPast(dateTo) {
   return dateTo && dayjs().isAfter(dateTo, 'D');
 }
 
-function isPointPreset(dateFrom, dateTo) {
+export function isPointPreset(dateFrom, dateTo) {
   const isDateFromSameDateOrBefore = dayjs().isSameOrAfter(dayjs(dateFrom), 'D');
   const isDateToSameDateOrAfter = dayjs().isSameOrBefore(dayjs(dateTo), 'day');
 
   return isDateFromSameDateOrBefore && isDateToSameDateOrAfter;
 }
 
-export { humanizePointDate, humanizePointTime, getDuration, getEventDuration, isPointFuture, isPointPast, isPointPreset };
+export const getDestinationById = (id, destinations) => destinations.find((destination) => destination.id === id);
+
+export const getOfferById = (id, offers) => {
+  let offerItem;
+  offers.forEach((offer) => {
+    offer.offers.forEach((item) => {
+      if (item.id === id) {
+        offerItem = item;
+      }
+    });
+  });
+  return offerItem;
+};
