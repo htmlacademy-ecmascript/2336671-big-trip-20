@@ -265,7 +265,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     evt.preventDefault();
-    const newPrice = Math.abs(parseFloat(evt.target.value));
+    const newPrice = Math.round(Math.abs(parseFloat(evt.target.value)));
 
     if (isNaN(newPrice)) {
       evt.target.value = '';
