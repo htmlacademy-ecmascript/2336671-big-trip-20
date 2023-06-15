@@ -45,8 +45,8 @@ export default class PointsModel extends Observable {
       this.#offers = offers;
       this.#destinations = destinations;
       this.#uiBlocker.unblock();
+
     } catch (err) {
-      console.log(err);
       this.#points = [];
       this.#offers = [];
       this.#destinations = [];
