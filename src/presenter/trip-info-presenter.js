@@ -19,11 +19,12 @@ export default class TripInfoPresenter {
 
   init () {
     const points = this.#pointsModel.points;
-    points.sort((a, b) => a.dateFrom - b.dateFrom);
 
     if (!points.length) {
       return;
     }
+
+    points.sort((a, b) => a.dateFrom - b.dateFrom);
     const destinations = this.#pointsModel.destinations;
     const offers = this.#pointsModel.offers;
 
