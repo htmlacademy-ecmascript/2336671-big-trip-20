@@ -1,6 +1,11 @@
 import { UpdateType } from '../const.js';
 import Observable from '../framework/observable.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
+const TimeLimit = {
+  LOWER_LIMIT: 300,
+  UPPER_LIMIT: 1000,
+};
 export default class PointsModel extends Observable {
 
   #pointsApiService = null;
@@ -8,11 +13,14 @@ export default class PointsModel extends Observable {
   #points = [];
   #offers = [];
   #destinations = [];
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor ({pointsApiService}) {
     super();
     this.#pointsApiService = pointsApiService;
-
   }
 
   get points() {
@@ -28,6 +36,7 @@ export default class PointsModel extends Observable {
   }
 
   async init () {
+    this.#uiBlocker.block();
     try {
       const points = await this.#pointsApiService.points;
       const offers = await this.#pointsApiService.offers;
@@ -35,10 +44,15 @@ export default class PointsModel extends Observable {
       this.#points = points.map(this.#adaptToClient);
       this.#offers = offers;
       this.#destinations = destinations;
+      this.#uiBlocker.unblock();
+
     } catch (err) {
       this.#points = [];
       this.#offers = [];
       this.#destinations = [];
+      this._notify(UpdateType.ERROR, err);
+      this.#uiBlocker.unblock();
+      return;
     }
     this._notify(UpdateType.INIT);
   }
@@ -48,10 +62,11 @@ export default class PointsModel extends Observable {
       const respose = await this.#pointsApiService.addPoint(update);
       const updatedPoint = this.#adaptToClient(respose);
 
-      this.#points = [updatedPoint, ...this.points];
+      this.#points = [updatedPoint, ...this.#points];
       this._notify(updateType, update);
 
     } catch(err) {
+
       throw new Error('Can\'t add point');
     }
   }
@@ -65,8 +80,11 @@ export default class PointsModel extends Observable {
 
     try {
       await this.#pointsApiService.deletePoint(update);
-      this.#points.splice(index, 1);
 
+      this.#points = [
+        ...this.#points.slice(0, index),
+        ...this.#points.slice(index + 1),
+      ];
       this._notify(updateType);
 
     } catch(err) {

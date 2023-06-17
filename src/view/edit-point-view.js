@@ -4,11 +4,28 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { offerTitleJoin } from '../utils/common.js';
 import { getDestinationById } from '../utils/point.js';
+import he from 'he';
 
 function createCityElements (cities) {
   return (
     cities.map((city) => (`<option value="${city}"></option>`)).join(' ')
   );
+}
+
+function createDestinationElement (destination) {
+  return (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination.description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+
+          ${createPictureElements(destination.pictures)}
+
+        </div>
+      </div>
+    </section>`);
 }
 
 function createPictureElements (pictures) {
@@ -27,6 +44,18 @@ function createEventsElements (events) {
       </div>`
     )).join('')
   );
+}
+
+function createOffersElement(offersByType, offers, isDisabled) {
+  return (`
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${createOffersList(offersByType, offers, isDisabled)}
+      </div>
+    </section>
+  `);
 }
 
 function createOffersList (offersByType, offers, isDisabled) {
@@ -97,7 +126,7 @@ function createEditPointTemplate (
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${thisDestination ? he.encode(thisDestination.name) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
           <datalist id="destination-list-1">
             ${createCityElements(cities)}
           </datalist>
@@ -105,10 +134,10 @@ function createEditPointTemplate (
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required autocomplete="off">
           —
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required autocomplete="off">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -116,7 +145,7 @@ function createEditPointTemplate (
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${he.encode(`${basePrice}`)}" ${isDisabled ? 'disabled' : ''} required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -126,23 +155,9 @@ function createEditPointTemplate (
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        ${offersType.offers.length ? createOffersElement(offersType.offers, offers, isDisabled) : ''}
 
-          <div class="event__available-offers">
-            ${createOffersList(offersType.offers, offers, isDisabled)}
-          </div>
-        </section>
-
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${thisDestination.description}</p>
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${createPictureElements(thisDestination.pictures)}
-            </div>
-          </div>
-        </section>
+        ${thisDestination ? createDestinationElement(thisDestination) : ''}
       </section>
     </form>
   </li>`
@@ -198,7 +213,11 @@ export default class EditPointView extends AbstractStatefulView {
     form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
-    form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+    const eventOffers = form.querySelector('.event__available-offers');
+
+    if(eventOffers) {
+      eventOffers.addEventListener('change', this.#onOfferChange);
+    }
 
     this.#setDatePicker();
   };
@@ -238,21 +257,26 @@ export default class EditPointView extends AbstractStatefulView {
       });
     } else {
       evt.target.value = '';
+      this.updateElement({
+        destination: '',
+      });
     }
   };
 
   #onPriceChange = (evt) => {
     evt.preventDefault();
-    const newPrice = Math.abs(parseFloat(evt.target.value));
+    const newPrice = Math.round(Math.abs(parseFloat(evt.target.value)));
 
-    if (!isNaN(newPrice)) {
+    if (isNaN(newPrice) || newPrice === 0) {
+      evt.target.value = '';
       this._setState({
-        basePrice: newPrice
+        basePrice: ''
       });
       return;
     }
+    evt.target.value = newPrice;
     this._setState({
-      basePrice: 0
+      basePrice: newPrice
     });
   };
 
@@ -288,6 +312,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#startDatePicker = flatpickr(
       startDate,
       {
+        allowInput: true,
         enableTime: true,
         'time_24hr': true,
         dateFormat: 'd/m/y H:i',
@@ -302,6 +327,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#endDatePicker = flatpickr(
       endDate,
       {
+        allowInput: true,
         enableTime: true,
         'time_24hr': true,
         dateFormat: 'd/m/y H:i',
@@ -334,12 +360,12 @@ export default class EditPointView extends AbstractStatefulView {
   });
 
   static parseStateToPoint = (state) => {
-    const task = {...state};
+    const point = {...state};
 
-    delete task.isSaving;
-    delete task.isDeleting;
-    delete task.isDisabled;
-    return task;
+    delete point.isSaving;
+    delete point.isDeleting;
+    delete point.isDisabled;
+    return point;
   };
 
   reset (point) {
