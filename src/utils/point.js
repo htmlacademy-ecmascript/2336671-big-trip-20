@@ -7,9 +7,10 @@ dayjs.extend(duration);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-
 const DATE_FORMAT = 'D MMM';
 const TIME_FORMAT = 'HH:mm';
+const HOUR = 24;
+const MINUTE = 60;
 
 export const humanizePointDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
 export const humanizePointTime = (time) => time ? dayjs(time).format(TIME_FORMAT) : '';
@@ -20,8 +21,8 @@ export const getEventDuration = (dateFrom, dateTo) => {
   const diffDays = dayjs(dateTo).diff(dayjs(dateFrom), 'day', true);
 
   const days = Math.floor(diffDays);
-  const hours = Math.floor((diffDays - days) * 24);
-  const minutes = Math.floor((((diffDays - days) * 24) - hours) * 60);
+  const hours = Math.floor((diffDays - days) * HOUR);
+  const minutes = Math.floor((((diffDays - days) * HOUR) - hours) * MINUTE);
 
   let eventDuration = '';
 

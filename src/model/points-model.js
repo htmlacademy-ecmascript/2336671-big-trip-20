@@ -59,8 +59,8 @@ export default class PointsModel extends Observable {
 
   async addPoint (updateType, update) {
     try {
-      const respose = await this.#pointsApiService.addPoint(update);
-      const updatedPoint = this.#adaptToClient(respose);
+      const response = await this.#pointsApiService.addPoint(update);
+      const updatedPoint = this.#adaptToClient(response);
 
       this.#points = [updatedPoint, ...this.#points];
       this._notify(updateType, update);
@@ -111,6 +111,10 @@ export default class PointsModel extends Observable {
     }
   }
 
+  getCitiesNames = () => this.#destinations.map((destination) => destination.name);
+
+  getEventsTypes = () => this.#offers.map((offer) => offer.type);
+
   #adaptToClient(point) {
     const adaptedPoint = {
       ...point,
@@ -127,9 +131,5 @@ export default class PointsModel extends Observable {
 
     return adaptedPoint;
   }
-
-  getCitiesNames = () => this.#destinations.map((destination) => destination.name);
-
-  getEventsTypes = () => this.#offers.map((offer) => offer.type);
 
 }

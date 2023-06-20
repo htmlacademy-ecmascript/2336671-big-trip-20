@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { offerTitleJoin } from '../utils/common.js';
+import { offerTitleJoin, toSentenceCase } from '../utils/common.js';
 import { getDestinationById } from '../utils/point.js';
 import he from 'he';
 
@@ -40,7 +40,7 @@ function createEventsElements (events) {
     events.map((event) => (
       `<div class="event__type-item">
         <input id="event-type-${event}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${event}">
-        <label class="event__type-label  event__type-label--${event}" for="event-type-${event}-1">${event.charAt(0).toUpperCase() + event.substr(1).toLowerCase()}</label>
+        <label class="event__type-label  event__type-label--${event}" for="event-type-${event}-1">${toSentenceCase(event)}</label>
       </div>`
     )).join('')
   );
@@ -203,6 +203,22 @@ export default class EditPointView extends AbstractStatefulView {
     );
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#startDatePicker && this.#endDatePicker) {
+      this.#startDatePicker.destroy();
+      this.#endDatePicker.destroy();
+
+      this.#startDatePicker = null;
+      this.#endDatePicker = null;
+    }
+  }
+
+  reset (point) {
+    this.updateElement(EditPointView.parsePointToState(point));
+  }
+
   _restoreHandlers = () => {
     const form = this.element.querySelector('form');
 
@@ -220,6 +236,53 @@ export default class EditPointView extends AbstractStatefulView {
     }
 
     this.#setDatePicker();
+  };
+
+  #setDatePicker () {
+    const startDate = this.element.querySelector('#event-start-time-1');
+    const endDate = this.element.querySelector('#event-end-time-1');
+
+    this.#startDatePicker = flatpickr(
+      startDate,
+      {
+        allowInput: true,
+        enableTime: true,
+        'time_24hr': true,
+        dateFormat: 'd/m/y H:i',
+        maxDate: this._state.dateTo,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        onChange: this.#startDateChangeHandler,
+      }
+    );
+
+    this.#endDatePicker = flatpickr(
+      endDate,
+      {
+        allowInput: true,
+        enableTime: true,
+        'time_24hr': true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.dateFrom,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        onChange: this.#endDateChangeHandler,
+      }
+    );
+  }
+
+  #startDateChangeHandler = ([dateFrom]) => {
+    this.updateElement({
+      dateFrom: dateFrom,
+    });
+  };
+
+  #endDateChangeHandler = ([dateTo]) => {
+    this.updateElement({
+      dateTo: dateTo,
+    });
   };
 
   #onFormSubmitClick = (evt) => {
@@ -293,65 +356,6 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  #startDateChangeHandler = ([dateFrom]) => {
-    this.updateElement({
-      dateFrom: dateFrom,
-    });
-  };
-
-  #endDateChangeHandler = ([dateTo]) => {
-    this.updateElement({
-      dateTo: dateTo,
-    });
-  };
-
-  #setDatePicker () {
-    const startDate = this.element.querySelector('#event-start-time-1');
-    const endDate = this.element.querySelector('#event-end-time-1');
-
-    this.#startDatePicker = flatpickr(
-      startDate,
-      {
-        allowInput: true,
-        enableTime: true,
-        'time_24hr': true,
-        dateFormat: 'd/m/y H:i',
-        maxDate: this._state.dateTo,
-        locale: {
-          firstDayOfWeek: 1
-        },
-        onChange: this.#startDateChangeHandler,
-      }
-    );
-
-    this.#endDatePicker = flatpickr(
-      endDate,
-      {
-        allowInput: true,
-        enableTime: true,
-        'time_24hr': true,
-        dateFormat: 'd/m/y H:i',
-        minDate: this._state.dateFrom,
-        locale: {
-          firstDayOfWeek: 1
-        },
-        onChange: this.#endDateChangeHandler,
-      }
-    );
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#startDatePicker && this.#endDatePicker) {
-      this.#startDatePicker.destroy();
-      this.#endDatePicker.destroy();
-
-      this.#startDatePicker = null;
-      this.#endDatePicker = null;
-    }
-  }
-
   static parsePointToState = (point) => ({
     ...point,
     isSaving: false,
@@ -367,9 +371,5 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.isDisabled;
     return point;
   };
-
-  reset (point) {
-    this.updateElement(EditPointView.parsePointToState(point));
-  }
 
 }

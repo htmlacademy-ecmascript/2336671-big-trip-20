@@ -2,7 +2,7 @@ import TripEventsListView from '../view/trip-events-list.js';
 import SortingView from '../view/sorting-view.js';
 import TripEventsListEmptyView from '../view/trip-events-list-empty.js';
 import NewPointButtonView from '../view/new-point-button-view.js';
-import TripEventsListLodingView from '../view/trip-events-list-loading.js';
+import TripEventsListLoadingView from '../view/trip-events-list-loading.js';
 import EventPresenter from './event-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
@@ -16,9 +16,10 @@ const TimeLimit = {
   LOWER_LIMIT: 300,
   UPPER_LIMIT: 1000,
 };
+
 export default class EventsPresenter {
   #eventsListComponent = new TripEventsListView();
-  #loadingComponent = new TripEventsListLodingView();
+  #loadingComponent = new TripEventsListLoadingView();
   #errorComponent = null;
 
   #newEventComponent = null;
