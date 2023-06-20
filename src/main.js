@@ -18,6 +18,7 @@ const newEventButtonElement = document.querySelector('.trip-main');
 const pointsModel = new PointsModel({
   pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
 });
+
 const filterModel = new FilterModel();
 
 const tripInfoPresenter = new TripInfoPresenter({eventContainer: tripMainElement, pointsModel});

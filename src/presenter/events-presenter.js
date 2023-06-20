@@ -1,8 +1,8 @@
-import TripEventsListView from '../view/trip-events-list.js';
+import TripEventsListView from '../view/trip-events-list-view.js';
 import SortingView from '../view/sorting-view.js';
-import TripEventsListEmptyView from '../view/trip-events-list-empty.js';
+import TripEventsListEmptyView from '../view/trip-events-list-empty-view.js';
 import NewPointButtonView from '../view/new-point-button-view.js';
-import TripEventsListLoadingView from '../view/trip-events-list-loading.js';
+import TripEventsListLoadingView from '../view/trip-events-list-loading-view.js';
 import EventPresenter from './event-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
@@ -117,6 +117,12 @@ export default class EventsPresenter {
     if (this.#isLoading) {
       this.#newEventComponent.element.disabled = true;
       this.#renderLoading();
+      return;
+    }
+
+    if(!this.#pointsModel.offers.length || !this.#pointsModel.destinations.length) {
+      this.#newEventComponent.element.disabled = true;
+      this.#renderError();
       return;
     }
 
