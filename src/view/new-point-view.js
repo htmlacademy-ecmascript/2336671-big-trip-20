@@ -205,8 +205,8 @@ export default class NewPointView extends AbstractStatefulView {
   _restoreHandlers = () => {
     const form = this.element.querySelector('form');
 
-    form.addEventListener('submit', this.#onFormSubmitClick);
-    form.addEventListener('reset', this.#onFormCancelClick);
+    form.addEventListener('submit', this.#formSubmitHandle);
+    form.addEventListener('reset', this.#formCancelHandle);
 
     form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
@@ -267,12 +267,12 @@ export default class NewPointView extends AbstractStatefulView {
     });
   };
 
-  #onFormSubmitClick = (evt) => {
+  #formSubmitHandle = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(NewPointView.parseStateToPoint(this._state));
   };
 
-  #onFormCancelClick = (evt) => {
+  #formCancelHandle = (evt) => {
     evt.preventDefault();
     this.#handleFormCancel();
   };

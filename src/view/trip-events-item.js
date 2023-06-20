@@ -93,7 +93,7 @@ export default class TripEventsItemView extends AbstractView {
       .addEventListener('click', this.#editEventHandler);
 
     this.element.querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#onFavoriteButtonClick);
+      .addEventListener('click', this.#favoriteButtonHandler);
   }
 
   get template() {
@@ -105,7 +105,7 @@ export default class TripEventsItemView extends AbstractView {
     this.#handleEditClick();
   };
 
-  #onFavoriteButtonClick = (evt) => {
+  #favoriteButtonHandler = (evt) => {
     evt.preventDefault();
     this.#handleFavoriteClick();
   };

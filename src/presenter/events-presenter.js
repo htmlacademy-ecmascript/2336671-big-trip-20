@@ -56,7 +56,7 @@ export default class EventsPresenter {
     this.#filterModel.addObserver(this.#handleModelEvent);
 
     this.#newEventComponent = new NewPointButtonView({
-      onNewPointButtonClick: this.#onNewEventClick
+      onNewPointButtonClick: this.#newEventHandle
     });
 
     render(this.#newEventComponent, newEventButtonContainer);
@@ -238,7 +238,7 @@ export default class EventsPresenter {
     this.#renderEventsList();
   };
 
-  #onNewEventClick = () => {
+  #newEventHandle = () => {
     this.#isNewPoint = true;
     this.#newEventComponent.element.disabled = true;
     this.#createPoint();
