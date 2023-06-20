@@ -1,13 +1,13 @@
-import EventsPresenter from './presenter/events-list-presenter.js';
+import EventsPresenter from './presenter/events-presenter.js';
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import PointsModel from './model/points-model.js';
 import FiltersPresenter from './presenter/filters-presenter.js';
-import FilterModel from './model/filters-model.js';
+import FilterModel from './model/filter-model.js';
 import { nanoid } from 'nanoid';
 import PointsApiService from './points-api-service.js';
 
-const rundomAuthString = nanoid();
-const AUTHORIZATION = `Basic ${rundomAuthString}`;
+const auth = nanoid();
+const AUTHORIZATION = `Basic ${auth}`;
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');

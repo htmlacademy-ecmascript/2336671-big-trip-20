@@ -1,4 +1,4 @@
-import TripEventsItemView from '../view/trip-events_item.js';
+import TripEventsItemView from '../view/trip-events-item.js';
 import EditPointView from '../view/edit-point-view.js';
 import { remove, render, replace } from '../framework/render';
 import { UserAction, UpdateType } from '../const.js';

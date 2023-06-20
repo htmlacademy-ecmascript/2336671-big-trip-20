@@ -4,7 +4,7 @@ function cretateTripEventsListEmptyTemplate () {
   return '<p class="trip-events__msg">Loading...</p>';
 }
 
-export default class TripEventsListLodingView extends AbstractView {
+export default class TripEventsListLoadingView extends AbstractView {
 
   get template () {
     return cretateTripEventsListEmptyTemplate();

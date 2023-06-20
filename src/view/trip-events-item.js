@@ -23,11 +23,11 @@ function createTripEventsItemTemplate (point, destinations, allOffers) {
   const currentDestination = destinations.find((dest) => dest.id === destination);
   const offersType = allOffers.find((offer) => offer.type === type);
 
-  const curentOffers = [];
+  const currentOffers = [];
   offers.forEach((id) => {
     offersType.offers.find((offer) => {
       if(offer.id === id) {
-        curentOffers.push(offer);
+        currentOffers.push(offer);
       }
     });
   });
@@ -56,7 +56,7 @@ function createTripEventsItemTemplate (point, destinations, allOffers) {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${createSelectedOffers(curentOffers)}
+          ${createSelectedOffers(currentOffers)}
         </ul>
         <button class="event__favorite-btn ${favorite}" type="button">
           <span class="visually-hidden">Add to favorite</span>

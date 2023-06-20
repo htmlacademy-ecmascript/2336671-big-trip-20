@@ -1,7 +1,7 @@
 import { SortType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createSoirtingTemplate (currentSortType) {
+function createSortingTemplate (currentSortType) {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <div class="trip-sort__item  trip-sort__item--day">
@@ -45,7 +45,7 @@ export default class SortingView extends AbstractView {
   }
 
   get template () {
-    return createSoirtingTemplate(this.#currentSortType);
+    return createSortingTemplate(this.#currentSortType);
   }
 
   #sortChangeClick = (evt) => {
