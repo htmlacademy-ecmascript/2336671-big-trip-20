@@ -47,10 +47,10 @@ export default class PointsModel extends Observable {
       this.#uiBlocker.unblock();
 
     } catch (err) {
+      this._notify(UpdateType.ERROR, err);
       this.#points = [];
       this.#offers = [];
       this.#destinations = [];
-      this._notify(UpdateType.ERROR, err);
       this.#uiBlocker.unblock();
       return;
     }

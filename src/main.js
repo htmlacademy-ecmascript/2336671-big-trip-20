@@ -3,11 +3,9 @@ import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import PointsModel from './model/points-model.js';
 import FiltersPresenter from './presenter/filters-presenter.js';
 import FilterModel from './model/filter-model.js';
-import { nanoid } from 'nanoid';
 import PointsApiService from './points-api-service.js';
 
-const auth = nanoid();
-const AUTHORIZATION = `Basic ${auth}`;
+const AUTHORIZATION = 'Basic zrJ6lCINwFpt4sUaqguqX';
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');
@@ -18,6 +16,7 @@ const newEventButtonElement = document.querySelector('.trip-main');
 const pointsModel = new PointsModel({
   pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
 });
+
 const filterModel = new FilterModel();
 
 const tripInfoPresenter = new TripInfoPresenter({eventContainer: tripMainElement, pointsModel});

@@ -222,17 +222,17 @@ export default class EditPointView extends AbstractStatefulView {
   _restoreHandlers = () => {
     const form = this.element.querySelector('form');
 
-    form.addEventListener('submit', this.#onFormSubmitClick);
-    form.addEventListener('reset', this.#onFormDeleteClick);
+    form.addEventListener('submit', this.#formSubmitClickHandler);
+    form.addEventListener('reset', this.#formDeleteClickHandler);
 
-    form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
-    form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
-    form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
-    form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
+    form.querySelector('.event__rollup-btn').addEventListener('click', this.#cancelClickHandler);
+    form.querySelector('.event__type-group').addEventListener('change', this.#eventTypeChangeHandler);
+    form.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    form.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     const eventOffers = form.querySelector('.event__available-offers');
 
     if(eventOffers) {
-      eventOffers.addEventListener('change', this.#onOfferChange);
+      eventOffers.addEventListener('change', this.#offerChangeHandler);
     }
 
     this.#setDatePicker();
@@ -285,22 +285,22 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #onFormSubmitClick = (evt) => {
+  #formSubmitClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
-  #onFormDeleteClick = (evt) => {
+  #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormDelete(EditPointView.parseStateToPoint(this._state));
   };
 
-  #onCancelButtonClick = (evt) => {
+  #cancelClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormCancel();
   };
 
-  #onEventTypeChange = (evt) => {
+  #eventTypeChangeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       this.updateElement({
@@ -310,7 +310,7 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  #onDestinationChange = (evt) => {
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const newDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
 
@@ -326,7 +326,7 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  #onPriceChange = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
     const newPrice = Math.round(Math.abs(parseFloat(evt.target.value)));
 
@@ -343,7 +343,7 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #onOfferChange = (evt) => {
+  #offerChangeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));

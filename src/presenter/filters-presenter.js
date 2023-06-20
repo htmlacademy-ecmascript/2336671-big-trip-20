@@ -31,6 +31,11 @@ export default class FiltersPresenter {
   }
 
   init () {
+
+    if (!this.#pointsModel.offers.length || !this.#pointsModel.destinations.length) {
+      return;
+    }
+
     const filters = this.filters;
 
     this.#filtersViewComponent = new FiltersView({
