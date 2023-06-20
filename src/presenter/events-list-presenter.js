@@ -1,8 +1,8 @@
-import TripEventsListView from '../view/trip-events_list.js';
+import TripEventsListView from '../view/trip-events-list.js';
 import SortingView from '../view/sorting-view.js';
-import TripEventsListEmptyView from '../view/trip-events_list-empty.js';
+import TripEventsListEmptyView from '../view/trip-events-list-empty.js';
 import NewPointButtonView from '../view/new-point-button-view.js';
-import TripEventsListLodingView from '../view/trip-events_list-loading.js';
+import TripEventsListLodingView from '../view/trip-events-list-loading.js';
 import EventPresenter from './event-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';

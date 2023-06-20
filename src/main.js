@@ -6,8 +6,8 @@ import FilterModel from './model/filters-model.js';
 import { nanoid } from 'nanoid';
 import PointsApiService from './points-api-service.js';
 
-const rundomAuthString = nanoid();
-const AUTHORIZATION = `Basic ${rundomAuthString}`;
+const auth = nanoid();
+const AUTHORIZATION = `Basic ${auth}`;
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');
