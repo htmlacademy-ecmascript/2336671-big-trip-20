@@ -205,12 +205,12 @@ export default class NewPointView extends AbstractStatefulView {
   _restoreHandlers = () => {
     const form = this.element.querySelector('form');
 
-    form.addEventListener('submit', this.#formSubmitHandle);
-    form.addEventListener('reset', this.#formCancelHandle);
+    form.addEventListener('submit', this.#formSubmitHandler);
+    form.addEventListener('reset', this.#formCancelHandler);
 
-    form.querySelector('.event__type-group').addEventListener('change', this.#onEventTypeChange);
-    form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
-    form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
+    form.querySelector('.event__type-group').addEventListener('change', this.#eventTypeChangeHandler);
+    form.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    form.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     const eventOffers = form.querySelector('.event__available-offers');
 
     if(eventOffers) {
@@ -267,17 +267,17 @@ export default class NewPointView extends AbstractStatefulView {
     });
   };
 
-  #formSubmitHandle = (evt) => {
+  #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(NewPointView.parseStateToPoint(this._state));
   };
 
-  #formCancelHandle = (evt) => {
+  #formCancelHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormCancel();
   };
 
-  #onEventTypeChange = (evt) => {
+  #eventTypeChangeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       this.updateElement({
@@ -287,7 +287,7 @@ export default class NewPointView extends AbstractStatefulView {
     }
   };
 
-  #onDestinationChange = (evt) => {
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const newDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
 
@@ -303,7 +303,7 @@ export default class NewPointView extends AbstractStatefulView {
     }
   };
 
-  #onPriceChange = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
     const newPrice = Math.round(Math.abs(parseFloat(evt.target.value)));
 
